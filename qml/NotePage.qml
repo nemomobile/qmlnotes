@@ -24,11 +24,13 @@ Page {
         TextEdit {
             id: editor
 
-            anchors.fill: parent
+            height: editorview.height
+            width: editorview.width
             cursorVisible: true
             textFormat: TextEdit.PlainText
             wrapMode: TextEdit.Wrap
             smooth: editorview.moving == false
+            focus: true
 
             onCursorRectangleChanged: editorview.followY(cursorRectangle)
         }
@@ -37,6 +39,4 @@ Page {
     ScrollDecorator {
         flickableItem: editorview
     }
-
-    Component.onCompleted: editor.focus = true
 }
