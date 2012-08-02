@@ -25,7 +25,9 @@ Page {
             id: editor
 
             anchors.fill: parent
-            focus: true
+            cursorVisible: true
+            textFormat: TextEdit.PlainText
+            wrapMode: TextEdit.Wrap
             smooth: editorview.moving == false
 
             onCursorRectangleChanged: editorview.followY(cursorRectangle)
@@ -35,4 +37,6 @@ Page {
     ScrollDecorator {
         flickableItem: editorview
     }
+
+    Component.onCompleted: editor.focus = true
 }
