@@ -7,6 +7,9 @@ INSTALLS += target
 RESOURCES += res.qrc
 SOURCES += main.cpp
 
+SOURCES += notesbackend.cpp
+HEADERS += notesbackend.h
+
 TEMPLATE = app
 CONFIG -= app_bundle
 TARGET = $$PROJECT_NAME

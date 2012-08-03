@@ -33,6 +33,13 @@ Page {
             focus: true
 
             onCursorRectangleChanged: editorview.followY(cursorRectangle)
+            onTextChanged: {
+                if (backend.write_note("note1", text) == false) {
+                    // Storage failed!
+                    readOnly = true; // Avoid further data loss
+                }
+            }
+            Component.onCompleted: text = backend.read_note("note1")
         }
     }
 

@@ -40,6 +40,11 @@
 #include <applauncherd/MDeclarativeCache>
 #endif
 
+// directory (in user's home) where notes are saved
+#define NOTES_DIR "Notes"
+
+#include "notesbackend.h"
+
 #ifdef HAS_BOOSTER
 Q_DECL_EXPORT
 #endif
@@ -70,6 +75,9 @@ int main(int argc, char **argv)
             exit(0);
         }
     }
+
+    NotesBackend backend(QDir::home().absoluteFilePath(NOTES_DIR));
+    view->rootContext()->setContextProperty("backend", &backend);
 
     QObject::connect(view->engine(), SIGNAL(quit()), application, SLOT(quit()));
 
