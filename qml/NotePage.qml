@@ -50,6 +50,17 @@ Page {
 
             onPinchFinished: editor.fontScale = editor.fontScale * pinch.scale
         }
+
+        Rectangle {
+            id: titleshade
+
+            x: editor.x; y: editor.y; width: editorview.width
+            height: editor.font.pixelSize * 1.25
+
+            color: "brown"
+            opacity: 0.2
+        }
+
     }
 
     ScrollDecorator {
