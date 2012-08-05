@@ -31,6 +31,9 @@ Page {
             wrapMode: TextEdit.Wrap
             smooth: editorview.moving == false
             focus: true
+            font.pixelSize: fontScale * height / 15
+
+            property real fontScale: 1.0
 
             onCursorRectangleChanged: editorview.followY(cursorRectangle)
             onTextChanged: {
@@ -40,6 +43,12 @@ Page {
                 }
             }
             Component.onCompleted: text = backend.read_note("note1")
+        }
+
+        PinchArea {
+            anchors.fill: editor;
+
+            onPinchFinished: editor.fontScale = editor.fontScale * pinch.scale
         }
     }
 
