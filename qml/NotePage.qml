@@ -31,7 +31,7 @@ Page {
             wrapMode: TextEdit.Wrap
             smooth: editorview.moving == false
             focus: true
-            font.pixelSize: fontScale * height / 15
+            font.pointSize: 24 * fontScale
 
             property real fontScale: 1.0
 
