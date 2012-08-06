@@ -6,7 +6,7 @@ PageStackWindow {
     initialPage: Page {
         anchors.fill: parent
 
-        Note {
+        NoteRing {
             anchors.fill: parent
         }
     }

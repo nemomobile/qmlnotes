@@ -2,6 +2,11 @@ import QtQuick 1.1
 import com.nokia.meego 1.0
 
 Item {
+    id: note
+
+    property string name: ''
+    onNameChanged: if (name != '') { editor.text = backend.read_note(name) }
+
     Flickable {
         id: editorview
 
@@ -35,12 +40,13 @@ Item {
 
             onCursorRectangleChanged: editorview.followY(cursorRectangle)
             onTextChanged: {
-                if (backend.write_note("note1", text) == false) {
-                    // Storage failed!
+                if (note.name == '')
+                    note.name = backend.new_note();
+                if (backend.write_note(note.name, text) == false) {
+                    console.log("Storage failed on " + note.name)
                     readOnly = true; // Avoid further data loss
                 }
             }
-            Component.onCompleted: text = backend.read_note("note1")
         }
 
         PinchArea {
