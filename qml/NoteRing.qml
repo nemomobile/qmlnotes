@@ -6,6 +6,8 @@ import "notes.js" as NoteScript
 Item {
     id: notering
 
+    property int spacing: 2
+
     ListModel {
         id: model
 
@@ -30,7 +32,7 @@ Item {
                     anchors.left: note.right
                     anchors.top: note.top
                     anchors.bottom: note.bottom
-                    width: 2
+                    width: notering.spacing
                     color: "brown"
                     z: note.z + 1
                 }
@@ -47,7 +49,7 @@ Item {
         orientation: ListView.Horizontal
         snapMode: ListView.SnapToItem
         cacheBuffer: notering.width * 5
-        spacing: 2  // same as noteborder.width
+        spacing: notering.spacing
         // no idea what unit this is, but this value feels ok in tests
         // if deceleration is too low then it's hard to flick just 1 page.
         flickDeceleration: 8000
