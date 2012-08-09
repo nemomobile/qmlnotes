@@ -53,6 +53,7 @@ Item {
         // no idea what unit this is, but this value feels ok in tests
         // if deceleration is too low then it's hard to flick just 1 page.
         flickDeceleration: 8000
+        pressDelay: 250
 
         highlightRangeMode: ListView.StrictlyEnforceRange
         preferredHighlightBegin: notering.x

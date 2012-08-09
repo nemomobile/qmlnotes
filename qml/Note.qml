@@ -14,6 +14,8 @@ Item {
         contentWidth: width
         contentHeight: editor.paintedHeight
         flickableDirection: Flickable.VerticalFlick 
+        // pressDelay to prevent editor from opening the keyboard on flicks
+        pressDelay: 250
         clip: true
 
         function followY(rect) {
@@ -22,6 +24,15 @@ Item {
             } else if (contentY + height <= rect.y + rect.height) {
                 contentY = rect.y + rect.height - height;
             }
+        }
+
+        // The PinchArea has to be before the TextEdit, otherwise it
+        // steals mouse press events that TextEdit uses to regulate
+        // keyboard focus.
+        PinchArea {
+            anchors.fill: editor;
+
+            onPinchFinished: editor.fontScale = editor.fontScale * pinch.scale
         }
 
         TextEdit {
@@ -50,12 +61,6 @@ Item {
                     readOnly = true; // Avoid further data loss
                 }
             }
-        }
-
-        PinchArea {
-            anchors.fill: editor;
-
-            onPinchFinished: editor.fontScale = editor.fontScale * pinch.scale
         }
 
         Rectangle {
