@@ -38,12 +38,15 @@ Item {
 
             property real fontScale: 1.0
 
+            // keep the cursor position in view when editing
             onCursorRectangleChanged: editorview.followY(cursorRectangle)
+            // ... or when the virtual keyboard pops up
+            onHeightChanged: editorview.followY(cursorRectangle)
             onTextChanged: {
                 if (note.name == '')
                     note.name = backend.new_note();
                 if (backend.write_note(note.name, text) == false) {
-                    console.log("Storage failed on " + note.name)
+                    console.log("Storage failed on " + note.name);
                     readOnly = true; // Avoid further data loss
                 }
             }
