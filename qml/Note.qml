@@ -7,6 +7,12 @@ Item {
     property string name: ''
     onNameChanged: if (name != '') { editor.text = backend.read_note(name) }
 
+    // fontScale and handlePinch are normally overridden by NoteRing in
+    // order to have a uniform font scale for all notes, but they are
+    // provided here in a way that allows Note to be used on its own too.
+    property real fontScale: 1.0
+    function handlePinch(pinch) { fontScale = fontScale * pinch.scale }
+
     Flickable {
         id: editorview
 
@@ -32,7 +38,7 @@ Item {
         PinchArea {
             anchors.fill: editor;
 
-            onPinchFinished: editor.fontScale = editor.fontScale * pinch.scale
+            onPinchFinished: note.handlePinch(pinch)
         }
 
         TextEdit {
@@ -45,9 +51,7 @@ Item {
             wrapMode: TextEdit.Wrap
             smooth: editorview.moving == false
             focus: true
-            font.pointSize: 24 * fontScale
-
-            property real fontScale: 1.0
+            font.pointSize: 24 * note.fontScale
 
             // keep the cursor position in view when editing
             onCursorRectangleChanged: editorview.followY(cursorRectangle)

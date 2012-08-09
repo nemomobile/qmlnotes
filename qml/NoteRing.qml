@@ -7,6 +7,7 @@ Item {
     id: notering
 
     property int spacing: 2
+    property real globalFontScale: 1.0
 
     ListModel {
         id: model
@@ -26,6 +27,11 @@ Item {
                 id: note
                 name: model.name
                 width: notering.width; height: notering.height
+                fontScale: globalFontScale
+
+                function handlePinch(pinch) {
+                    globalFontScale = globalFontScale * pinch.scale
+                }
 
                 Rectangle {
                     id: noteborder
