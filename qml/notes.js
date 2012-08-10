@@ -33,8 +33,6 @@ function populateList(model) {
             model.append({ "name": "" })
         }
     })
-
-    listview.currentIndex = 1
 }
 
 function registerNewNote(model, index, name) {

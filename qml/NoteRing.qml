@@ -12,7 +12,11 @@ Item {
     ListModel {
         id: listmodel
 
-        Component.onCompleted: NoteScript.populateList(listmodel)
+        Component.onCompleted: {
+            NoteScript.populateList(listmodel);
+            listview.currentIndex = 1;
+            listview.positionViewAtIndex(1, ListView.Contain)
+        }
     }
 
     Component {
@@ -81,5 +85,7 @@ Item {
             else if (currentIndex == max)
                 currentIndex = 1
         }
+
+        Component.onCompleted: currentIndex = 1
     }
 }
