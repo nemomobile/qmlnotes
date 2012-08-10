@@ -1,6 +1,6 @@
 Name:       qmlnotes
 Summary:    Note-taking application
-Version:    0.1
+Version:    0.2
 Release:    1
 Group:      Applications/System
 License:    BSD
