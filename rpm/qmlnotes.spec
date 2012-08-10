@@ -17,7 +17,7 @@ BuildRequires:  desktop-file-utils
 Note-taking application using Qt Quick
 
 %prep
-%setup -q -n %{name}
+%setup -q
 
 %build
 
