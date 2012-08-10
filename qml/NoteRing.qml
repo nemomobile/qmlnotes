@@ -64,5 +64,20 @@ Item {
         highlightRangeMode: ListView.StrictlyEnforceRange
         preferredHighlightBegin: notering.x
         preferredHighlightEnd: notering.x + notering.width
+        // make the view snap to the new item when currentItem changes
+        // (1 is the minimum duration, just 1 millisecond)
+        highlightMoveDuration: 1
+
+        onCurrentIndexChanged: {
+            var max = model.count - 1
+            if (max < 3)
+                return;  // model not ready yet
+            // Stay away from the edges; wrap around.
+            // The model is specially designed for this.
+            if (currentIndex == 0)
+                currentIndex = max - 1
+            else if (currentIndex == max)
+                currentIndex = 1
+        }
     }
 }
