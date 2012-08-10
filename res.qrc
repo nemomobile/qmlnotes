@@ -1,6 +1,8 @@
 <RCC>
     <qresource>
-        <file>qml/NotePage.qml</file>
+        <file>qml/notes.js</file>
+        <file>qml/Note.qml</file>
+        <file>qml/NoteRing.qml</file>
         <file>main.qml</file>
     </qresource>
 </RCC>
