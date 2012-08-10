@@ -5,7 +5,6 @@ Release:    1
 Group:      Applications/System
 License:    BSD
 Source0:    %{name}-%{version}.tar.bz2
-Source1:    qmlnotes.desktop
 Requires:   qt-components
 BuildRequires:  pkgconfig(QtCore) >= 4.7.0
 BuildRequires:  pkgconfig(QtDeclarative)
@@ -33,7 +32,7 @@ make %{?jobs:-j%jobs}
 %install
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/%{_datadir}/applications
-cp %{SOURCE1} %{buildroot}/%{_datadir}/applications/qmlnotes.desktop
+install -m 0666 qmlnotes.desktop %{buildroot}/%{_datadir}/applications/
 %qmake_install
 
 desktop-file-install --delete-original       \
