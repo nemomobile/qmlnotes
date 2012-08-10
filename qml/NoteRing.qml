@@ -10,9 +10,9 @@ Item {
     property real globalFontScale: 1.0
 
     ListModel {
-        id: model
+        id: listmodel
 
-        Component.onCompleted: NoteScript.populateList(model)
+        Component.onCompleted: NoteScript.populateList(listmodel)
     }
 
     Component {
@@ -33,6 +33,8 @@ Item {
                     globalFontScale = globalFontScale * pinch.scale
                 }
 
+                onNewNote: NoteScript.registerNewNote(listmodel, index, name)
+
                 Rectangle {
                     id: noteborder
                     anchors.left: note.right
@@ -50,7 +52,7 @@ Item {
         id: listview
 
         anchors.fill: parent
-        model: model
+        model: listmodel
         delegate: delegate
         orientation: ListView.Horizontal
         snapMode: ListView.SnapToItem
@@ -69,11 +71,11 @@ Item {
         highlightMoveDuration: 1
 
         onCurrentIndexChanged: {
-            var max = model.count - 1
-            if (max < 3)
-                return;  // model not ready yet
+            var max = listmodel.count - 1
+            if (max < 2)
+                return;  // listmodel not ready yet
             // Stay away from the edges; wrap around.
-            // The model is specially designed for this.
+            // The listmodel is specially designed for this.
             if (currentIndex == 0)
                 currentIndex = max - 1
             else if (currentIndex == max)

@@ -13,6 +13,8 @@ Item {
         editor.busy = false;
     }
 
+    signal newNote;
+
     // fontScale and handlePinch are normally overridden by NoteRing in
     // order to have a uniform font scale for all notes, but they are
     // provided here in a way that allows Note to be used on its own too.
@@ -70,8 +72,10 @@ Item {
                 if (busy)
                     return;
                 busy = true;
-                if (note.name == '')
+                if (note.name == '') {
                     note.name = backend.new_note();
+                    note.newNote()
+                }
                 if (backend.write_note(note.name, text) == false) {
                     console.log("Storage failed on " + note.name);
                     readOnly = true; // Avoid further data loss

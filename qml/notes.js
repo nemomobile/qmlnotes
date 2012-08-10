@@ -1,9 +1,10 @@
-function initDB(db) {
-    db.changeVersion('', '1', function (tx) {
-        tx.executeSql('CREATE TABLE notes (seq INTEGER, name TEXT)');
-        var name = backend.new_note()
-        tx.executeSql('INSERT INTO notes VALUES (?, ?)', [1, name])
-    })
+function openDb() {
+    return openDatabaseSync('qmlnotes', '1', 'Notes meta-information', 10000,
+        function (db) {  // initialization callback
+            db.changeVersion('', '1', function (tx) {
+                tx.executeSql('CREATE TABLE notes (seq INTEGER, name TEXT)');
+            })
+        })
 }
 
 // The model is populated in a slightly odd way to preserve the
@@ -17,8 +18,7 @@ function initDB(db) {
 // Then there are just 3 blanks, and the currentIndex is forced to
 // stay at the middle one.
 function populateList(model) {
-    var db = openDatabaseSync('qmlnotes', '1', 'Notes meta-information', 10000,
-         initDB)
+    var db = openDb()
     db.transaction(function (tx) {
         model.clear()
         var results = tx.executeSql('SELECT name FROM notes ORDER BY seq');
@@ -29,8 +29,31 @@ function populateList(model) {
         model.append({ "name": "" })
         if (results.rows.length > 0) {
             model.append({ "name": results.rows.item(0).name })
+        } else {
+            model.append({ "name": "" })
         }
     })
 
     listview.currentIndex = 1
+}
+
+function registerNewNote(model, index, name) {
+    if (model.get(index).name != '') {
+        console.log("Internal error! trying to overwrite "
+                    + model.get(index).name + " in index")
+        return;
+    }
+
+    model.set(index, { "name": name })
+    if (model.count == 3) { // convert from special case
+        model.append({ "name": name})
+    } else {
+        model.insert(index + 1, { "name": ""})
+    }
+
+    var db = openDb();
+    db.transaction(function (tx) {
+        tx.executeSql('INSERT INTO notes (seq, name) VALUES (?, ?)',
+                      [index, name])
+    })
 }
