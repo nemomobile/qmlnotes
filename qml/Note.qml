@@ -5,7 +5,13 @@ Item {
     id: note
 
     property string name: ''
-    onNameChanged: if (name != '') { editor.text = backend.read_note(name) }
+    onNameChanged: {
+        if (name == '' || editor.busy)
+            return;
+        editor.busy = true;
+        editor.text = backend.read_note(name);
+        editor.busy = false;
+    }
 
     // fontScale and handlePinch are normally overridden by NoteRing in
     // order to have a uniform font scale for all notes, but they are
@@ -53,17 +59,24 @@ Item {
             focus: true
             font.pointSize: 24 * note.fontScale
 
+            // this keeps it from immediately saving after loading, etc.
+            property bool busy: false
+
             // keep the cursor position in view when editing
             onCursorRectangleChanged: editorview.followY(cursorRectangle)
             // ... or when the virtual keyboard pops up
             onHeightChanged: editorview.followY(cursorRectangle)
             onTextChanged: {
+                if (busy)
+                    return;
+                busy = true;
                 if (note.name == '')
                     note.name = backend.new_note();
                 if (backend.write_note(note.name, text) == false) {
                     console.log("Storage failed on " + note.name);
                     readOnly = true; // Avoid further data loss
                 }
+                busy = false;
             }
         }
 
