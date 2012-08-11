@@ -48,4 +48,8 @@ Page {
         model: listmodel
         delegate: delegate
     }
+
+    ScrollDecorator {
+        flickableItem: listview
+    }
 }
