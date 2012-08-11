@@ -17,7 +17,7 @@ function openDb() {
 // There's an exceptional state if there are no real notes yet.
 // Then there are just 3 blanks, and the currentIndex is forced to
 // stay at the middle one.
-function populateList(model) {
+function populateRing(model) {
     var db = openDb()
     db.transaction(function (tx) {
         model.clear()
@@ -31,6 +31,22 @@ function populateList(model) {
             model.append({ "name": results.rows.item(0).name })
         } else {
             model.append({ "name": "" })
+        }
+    })
+}
+
+function populateTitleList(model) {
+    var db = openDb()
+    db.transaction(function (tx) {
+        model.clear()
+        var results = tx.executeSql('SELECT seq, name FROM notes ORDER BY seq');
+        for (var i = 0; results.rows.item(i) != null; i++) {
+            var name = results.rows.item(i).name
+            var text = backend.read_note(name)
+            var title = text.split("\n")[0]
+            if (title == "")
+                title = "" + results.rows.item(i).seq
+            model.append({ "name": name, "title": title })
         }
     })
 }

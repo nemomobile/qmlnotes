@@ -3,6 +3,7 @@
         <file>qml/notes.js</file>
         <file>qml/Note.qml</file>
         <file>qml/NoteRing.qml</file>
+        <file>qml/Overview.qml</file>
         <file>main.qml</file>
     </qresource>
 </RCC>

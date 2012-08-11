@@ -3,9 +3,10 @@ import com.nokia.meego 1.0
 
 import "notes.js" as NoteScript
 
-Item {
+Page {
     id: notering
 
+    property alias currentIndex: listview.currentIndex
     property int spacing: 2
     property real globalFontScale: 1.0
 
@@ -13,7 +14,7 @@ Item {
         id: listmodel
 
         Component.onCompleted: {
-            NoteScript.populateList(listmodel);
+            NoteScript.populateRing(listmodel);
             listview.currentIndex = 1;
             listview.positionViewAtIndex(1, ListView.Contain)
         }
@@ -70,7 +71,7 @@ Item {
         highlightRangeMode: ListView.StrictlyEnforceRange
         preferredHighlightBegin: notering.x
         preferredHighlightEnd: notering.x + notering.width
-        // make the view snap to the new item when currentItem changes
+        // make the view snap to the new item when currentIndex changes
         // (1 is the minimum duration, just 1 millisecond)
         highlightMoveDuration: 1
 
@@ -87,5 +88,23 @@ Item {
         }
 
         Component.onCompleted: currentIndex = 1
+    }
+
+    Component {
+        // wrap Overview in a Component so that it gets recreated every
+        // time it is pushed; that way it reloads the note title list.
+        id: overview
+
+        Overview { }
+    }
+
+    tools: ToolBarLayout {
+        ToolIcon {
+            iconId: "toolbar-pages-all"
+            onClicked: {
+                pageStack.push(overview)
+                pageStack.currentPage.currentIndex = currentIndex - 1
+            }
+        }
     }
 }
