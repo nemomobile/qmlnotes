@@ -91,6 +91,9 @@ Page {
         }
 
         Component.onCompleted: currentIndex = 1
+
+        property int lastNote: count - 3
+        property bool atNewNote: currentIndex == count - 2
     }
 
     Component {
@@ -110,7 +113,8 @@ Page {
             }
         }
         Label {
-            text: "" + listview.currentIndex + "/" + (listview.count - 2)
+            text: listview.atNewNote ? ""
+                  : "" + listview.currentIndex + "/" + listview.lastNote
             // ToolBarLayout doesn't track the width correctly when the
             // text changes, so just set a width with some spare space here.
             Component.onCompleted: width = paintedWidth * 1.5
