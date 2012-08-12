@@ -21,7 +21,6 @@ Page {
         id: delegate
 
         Button {
-            id: titletext
             width: listview.width
             text: model.title
             font.pointSize: 24
@@ -63,12 +62,12 @@ Page {
     }
 
     Label {
+        id: emptylistcomforter
+
         anchors.centerIn: listview
         visible: listview.count == 0
         font.pointSize: 40
         text: "No notes yet"
         color: "gray"
-
-        onVisibleChanged: console.log(visible)
     }
 }
