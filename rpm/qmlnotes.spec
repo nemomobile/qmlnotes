@@ -1,9 +1,12 @@
+# Copyright (C) 2012 Jolla Ltd.
+# Contact: Richard Braakman <richard.braakman@jollamobile.com>
+
 Name:       qmlnotes
 Summary:    Note-taking application
 Version:    0.2
 Release:    1
 Group:      Applications/System
-License:    BSD
+License:    GPLv2+
 Source0:    %{name}-%{version}.tar.bz2
 Requires:   qt-components
 BuildRequires:  pkgconfig(QtCore) >= 4.7.0

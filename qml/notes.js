@@ -1,3 +1,6 @@
+// Copyright (C) 2012 Jolla Ltd.
+// Contact: Richard Braakman <richard.braakman@jollamobile.com>
+
 function openDb() {
     return openDatabaseSync('qmlnotes', '1', 'Notes meta-information', 10000,
         function (db) {  // initialization callback

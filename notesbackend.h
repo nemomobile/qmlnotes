@@ -1,3 +1,6 @@
+// Copyright (C) 2012 Jolla Ltd.
+// Contact: Richard Braakman <richard.braakman@jollamobile.com>
+
 #ifndef NOTESBACKEND_H
 #define NOTESBACKEND_H
 
