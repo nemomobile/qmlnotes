@@ -17,26 +17,15 @@ Page {
     Component {
         id: delegate
 
-        Rectangle {
-            width: parent.width
-            height: titletext.height
-            border.width: 2
-            border.color: "black"
+        Button {
+            id: titletext
+            width: listview.width
+            text: model.title
+            font.pointSize: 24
 
-            Text {
-                id: titletext
-                width: parent.width
-                horizontalAlignment: Text.AlignHCenter
-                text: model.title
-                font.pointSize: 24
-            }
-
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    pageStack.pop()
-                    pageStack.currentPage.currentIndex = index + 1
-                }
+            onClicked: {
+                pageStack.pop()
+                pageStack.currentPage.currentIndex = index + 1
             }
         }
     }

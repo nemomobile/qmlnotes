@@ -44,8 +44,7 @@ function populateTitleList(model) {
             var name = results.rows.item(i).name
             var text = backend.read_note(name)
             var title = text.split("\n")[0]
-            if (title == "")
-                title = "" + results.rows.item(i).seq
+            title = "" + results.rows.item(i).seq + ". " + title
             model.append({ "name": name, "title": title })
         }
     })
