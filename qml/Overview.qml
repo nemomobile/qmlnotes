@@ -33,15 +33,42 @@ Page {
         }
     }
 
+    Button {
+        id: newbutton
+
+        anchors.top: parent.top
+        width: parent.width
+        text: "New note"
+
+        onClicked: {
+            pageStack.pop()
+            pageStack.currentPage.currentIndex = listview.count + 1
+        }
+    }
+
     ListView {
         id: listview
 
-        anchors.fill: parent
+        anchors {
+            top: newbutton.bottom; bottom: parent.bottom
+            left: parent.left; right: parent.right
+        }
+        clip: true  // don't overlap the new note button
         model: listmodel
         delegate: delegate
     }
 
     ScrollDecorator {
         flickableItem: listview
+    }
+
+    Label {
+        anchors.centerIn: listview
+        visible: listview.count == 0
+        font.pointSize: 40
+        text: "No notes yet"
+        color: "gray"
+
+        onVisibleChanged: console.log(visible)
     }
 }
