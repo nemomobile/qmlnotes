@@ -109,5 +109,11 @@ Page {
                 pageStack.currentPage.currentIndex = currentIndex - 1
             }
         }
+        Label {
+            text: "" + listview.currentIndex + "/" + (listview.count - 2)
+            // ToolBarLayout doesn't track the width correctly when the
+            // text changes, so just set a width with some spare space here.
+            Component.onCompleted: width = paintedWidth * 1.5
+        }
     }
 }
