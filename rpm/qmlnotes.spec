@@ -3,17 +3,17 @@
 
 Name:       qmlnotes
 Summary:    Note-taking application
-Version:    0.2
+Version:    0.3.1
 Release:    1
 Group:      Applications/System
 License:    GPLv2+
+URL:        https://github.com/nemomobile/qmlnotes
 Source0:    %{name}-%{version}.tar.bz2
 Requires:   qt-components
 BuildRequires:  pkgconfig(QtCore) >= 4.7.0
 BuildRequires:  pkgconfig(QtDeclarative)
 BuildRequires:  pkgconfig(QtGui)
 BuildRequires:  pkgconfig(qdeclarative-boostable)
-BuildRequires:  desktop-file-utils
 
 %description
 Note-taking application using Qt Quick
@@ -37,10 +37,6 @@ rm -rf %{buildroot}
 mkdir -p %{buildroot}/%{_datadir}/applications
 install -m 0666 qmlnotes.desktop %{buildroot}/%{_datadir}/applications/
 %qmake_install
-
-desktop-file-install --delete-original       \
-  --dir %{buildroot}%{_datadir}/applications             \
-   %{buildroot}%{_datadir}/applications/*.desktop
 
 %files
 %defattr(-,root,root,-)
