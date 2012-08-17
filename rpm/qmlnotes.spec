@@ -35,7 +35,7 @@ make %{?jobs:-j%jobs}
 %install
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/%{_datadir}/applications
-install -m 0666 qmlnotes.desktop %{buildroot}/%{_datadir}/applications/
+install -m 0644 qmlnotes.desktop %{buildroot}/%{_datadir}/applications/
 %qmake_install
 
 %files
