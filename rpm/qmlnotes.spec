@@ -18,6 +18,17 @@ BuildRequires:  pkgconfig(qdeclarative-boostable)
 %description
 Note-taking application using Qt Quick
 
+%package tests
+Summary:    Unit tests for the note-taking application
+Group:      Development/Libraries
+Requires:   %{name} = %{version}-%{release}
+Requires:   qttas-server
+Requires:   rubygem-testability-driver-qt-sut-plugin
+Requires:   ruby
+
+%description tests
+This package contains unit tests to be run with TDriver and testrunner-lite.
+
 %prep
 %setup -q
 
@@ -42,3 +53,7 @@ install -m 0644 qmlnotes.desktop %{buildroot}/%{_datadir}/applications/
 %defattr(-,root,root,-)
 %{_bindir}/qmlnotes
 %{_datadir}/applications/qmlnotes.desktop
+
+%files tests
+%defattr(-,root,root,-)
+%{_datadir}/%{name}-tests/
