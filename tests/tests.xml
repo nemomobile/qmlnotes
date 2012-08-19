@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF=8'?>
+<testdefinition version='0.1'>
+  <suite name='qmlnotes-tests' domain='Applications' type='Functional'>
+    <set name='functional_tests' description='Functional tests' feature='Notes'>
+      <pre_steps>
+        <step>qttasserver &amp;</step>
+        <step expected_result='0'>/usr/share/qmlnotes-tests/notes.sh stash</step>
+      </pre_steps>
+      <case name='note_editing' description='Basic note-taking: add and edit notes'>
+        <step>qttasserver &amp;</step>
+        <step expected_result='0'>ruby /usr/share/qmlnotes-tests/</step>
+      </case>
+      <post_steps>
+        <step expected_result='0'>/usr/share/qmlnotes-tests/notes.sh unstash</step>
+      </post_steps>
+      <environments>
+        <scratcbox>true</scratchbox>
+        <hardware>true</hardware>
+      </environments>
+    </set>
+  </suite>
+</testdefinition>

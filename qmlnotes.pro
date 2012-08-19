@@ -40,3 +40,8 @@ packagesExist(qdeclarative-boostable) {
 } else {
     warning("qdeclarative-boostable not available; startup times will be slower")                                                                         
 }
+
+tests.path = $$INSTALL_ROOT/usr/share/qmlnotes-tests
+tests.files = tests/*.xml tests/*.rb tests/*.sh
+
+INSTALLS += tests
