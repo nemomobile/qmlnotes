@@ -11,3 +11,5 @@ tester.verify_index(1)
 tester.flick_note_right
 tester.verify_empty
 tester.verify_index(1)
+
+tester.kill
