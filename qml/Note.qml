@@ -8,11 +8,13 @@ Item {
     id: note
 
     property string name: ''
+    property alias text: editor.text
+
     onNameChanged: {
         if (name == '' || editor.busy)
             return;
         editor.busy = true;
-        editor.text = backend.read_note(name);
+        text = backend.read_note(name);
         editor.busy = false;
     }
 

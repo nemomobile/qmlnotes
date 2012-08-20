@@ -34,6 +34,7 @@ Page {
             Note {
                 id: note
                 name: model.name
+                index: model.index
                 width: notering.width; height: notering.height
                 fontScale: globalFontScale
 

@@ -1,6 +1,5 @@
 require 'tdriver'
 include TDriverVerify
-include TDriverReportTestUnit
 
 class QmlnotesTester
 
@@ -8,7 +7,7 @@ class QmlnotesTester
     @sut = TDriver.sut(:sut_qt)
     @app = @sut.run(:name => 'qmlnotes', :restart_if_running => true,
                     :arguments => '-fullscreen,-testability')
-    @timeout = 30
+    @timeout = nil
   end
 
   def kill
@@ -21,33 +20,48 @@ class QmlnotesTester
                     :arguments => '-fullscreen,-testability')
   end
 
-  def verify_empty
-    verify(@timeout, "expected empty Note page") { @app.Note(:text => '') }
+  def _horiz_overlap(a, b)
+    al = a['x'].to_i
+    ar = a['x'].to_i + a['width'].to_i
+    bl = b['x'].to_i
+    br = b['x'].to_i + b['width'].to_i
+    # note that the 'r' values are just past the end of the object
+    return (al >= bl && al < br) || (ar > bl && ar <= br)
   end
 
-  def _flick_note(direction, adj)
-    old_index = @app.NoteRing.ListView['currentIndex']
-    @app.NoteRing.ListView.flick(:direction => direction)
-    new_index = (old_index.to_i + adj).to_s
-    verify(@timeout,
-      "Expected flick to move note #{new_index} into view") { 
-      @app.NoteRing.ListView.Note(:index => new_index,
-                                  :visibleOnScreen => 'true')
+  def verify_empty
+    verify_equal('', @timeout, "expected empty Note page") {
+      @app.Note(:x => @app.NoteRing['x'], :y => @app.NoteRing['y'])['text']
     }
-    verify(@timeout,
-      "Expected flick to move note ring to note #{new_index}") {
-      # The ListView will wrap around if it hits the edges, but still
-      # it should hit new_index temporarily before being adjusted.
-      @app.NoteRing.ListView(:currentIndex => new_index)
+  end
+
+  def verify_index(index)
+    verify(@timeout, "expected current note #{index}") {
+      @app.NoteRing.QDeclarativeListView(:currentIndex => index.to_s)
+    }
+    verify(@timeout, "expected current note to be in view") {
+      listview = @app.NoteRing.QDeclarativeListView
+      _horiz_overlap(listview.Note(:index => index.to_s), listview)
+    }
+  end
+
+  def _flick_note(direction)
+    # Even if the currentIndex gets reset to its original value (which can
+    # happen if it wraps around a size-1 ring), it should at least briefly
+    # take on a new value during the flick.
+    @app.NoteRing.QDeclarativeListView.verify_signal(3, 'currentIndexChanged()',
+        "Expected current index to change after flick") {
+      @app.NoteRing.QDeclarativeListView.gesture(direction, 0.5, 300,
+          :use_tap_screen => true)
     }
   end
 
   def flick_note_left
-    _flick_note(:Left, -1)
+    _flick_note(:Left)
   end
 
   def flick_note_right
-    _flick_note(:Right, +1)
+    _flick_note(:Right)
   end
 
 end
