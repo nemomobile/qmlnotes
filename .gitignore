@@ -1,0 +1,6 @@
+qmlnotes
+Makefile
+*.o
+moc_*.cpp
+qrc_*.cpp
+tests/tests.xml
