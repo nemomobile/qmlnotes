@@ -56,4 +56,4 @@ install -m 0644 qmlnotes.desktop %{buildroot}/%{_datadir}/applications/
 
 %files tests
 %defattr(-,root,root,-)
-%{_datadir}/%{name}-tests/
+/opt/tests/qmlnotes/

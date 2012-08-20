@@ -7,7 +7,7 @@ cat <<'EOT'
     <set name='functional_tests' description='Functional tests' feature='Notes'>
       <pre_steps>
         <step>qttasserver &amp;</step>
-        <step expected_result='0'>/usr/share/qmlnotes-tests/notes.sh stash</step>
+        <step expected_result='0'>/opt/tests/qmlnotes/notes.sh stash</step>
       </pre_steps>
 EOT
 
@@ -19,14 +19,14 @@ for file in test_*.rb; do
     name=${name#test_}
     cat <<EOT
       <case name='${name}' description='$desc'>
-        <step expected_result='0'>ruby /usr/share/qmlnotes-tests/$file</step>
+        <step expected_result='0'>ruby /opt/tests/qmlnotes/$file</step>
       </case>
 EOT
 done
 
 cat <<'EOT'
       <post_steps>
-        <step expected_result='0'>/usr/share/qmlnotes-tests/notes.sh unstash</step>
+        <step expected_result='0'>/opt/tests/qmlnotes/notes.sh unstash</step>
       </post_steps>
       <environments>
         <scratchbox>true</scratchbox>
