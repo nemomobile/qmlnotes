@@ -44,6 +44,6 @@ packagesExist(qdeclarative-boostable) {
 tests.path = $$INSTALL_ROOT/usr/share/qmlnotes-tests
 tests.files = tests/tests.xml tests/*.rb tests/notes.sh
 tests.extra = (cd tests && ./gen_tests_xml.sh >$$OUT_PWD/tests/tests.xml)
-tests.CONFIG = no_check_exists
+tests.CONFIG = no_check_exist
 
 INSTALLS += tests
