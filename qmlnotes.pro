@@ -42,7 +42,7 @@ packagesExist(qdeclarative-boostable) {
 }
 
 tests.path = $$INSTALL_ROOT/usr/share/qmlnotes-tests
-tests.files = tests/*.xml tests/*.rb tests/*.sh
-tests.extra = (cd tests && gen_tests_xml.sh >tests.xml)
+tests.files = tests/tests.xml tests/*.rb tests/notes.sh
+tests.extra = (cd tests && ./gen_tests_xml.sh >tests.xml)
 
 INSTALLS += tests
