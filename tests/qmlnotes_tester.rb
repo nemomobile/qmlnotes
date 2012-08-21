@@ -29,9 +29,19 @@ class QmlnotesTester
     return (al >= bl && al < br) || (ar > bl && ar <= br)
   end
 
+  def _current_note
+      @app.Note(:x => @app.NoteRing['x'], :y => @app.NoteRing['y'])
+  end
+
   def verify_empty
     verify_equal('', @timeout, "expected empty Note page") {
-      @app.Note(:x => @app.NoteRing['x'], :y => @app.NoteRing['y'])['text']
+      _current_note['text']
+    }
+  end
+
+  def verify_note(body)
+    verify_equal(body, @timeout, "did not find expected note text") {
+      _current_note['text']
     }
   end
 
@@ -45,7 +55,7 @@ class QmlnotesTester
     }
   end
 
-  def _flick_note(direction)
+  def flick_note(direction)
     # Even if the currentIndex gets reset to its original value (which can
     # happen if it wraps around a size-1 ring), it should at least briefly
     # take on a new value during the flick.
@@ -57,11 +67,34 @@ class QmlnotesTester
   end
 
   def flick_note_left
-    _flick_note(:Left)
+    flick_note(:Left)
   end
 
   def flick_note_right
-    _flick_note(:Right)
+    flick_note(:Right)
+  end
+
+  def write_note(body)
+    _current_note.tap
+    verify_equal("true", @timeout,
+      "Expected current note to get active focus") {
+      _current_note.QDeclarativeTextEdit['activeFocus']
+    }
+    seq = MobyCommand::KeySequence.new
+    body.each_char do |c|
+      case c
+        when /[a-z0-9]/ then seq.append!("k#{c.upcase}".to_sym)
+        when /[A-Z]/
+          seq.append!(:kShift, :KeyDown)
+          seq.append!("k#{c}".to_sym)
+          seq.append!(:kShift, :KeyUp)
+        when ' ' then seq.append!(:kSpace)
+        when "\n" then seq.append!(:kEnter)
+        when '.' then seq.append!(:kPeriod)
+        else raise ArgumentError, "write_note cannot type '#{c}'"
+      end
+    end
+    _current_note.press_key(seq)
   end
 
 end
