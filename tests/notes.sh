@@ -27,7 +27,7 @@ if [ "x$1" = "xstash" ]; then
     fi
     if [ -f "$NOTES_INI" ]; then
         if [ -f "$NOTES_STASH_INI" ]; then
-            rm -f "$NOTES_STASH_INI" "$NOTES_STASH_DB"
+            rm -f "$NOTES_INI" "$NOTES_DB"
         else
             mv "$NOTES_INI" "$NOTES_STASH_INI"
             mv "$NOTES_DB" "$NOTES_STASH_DB"

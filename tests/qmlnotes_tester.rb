@@ -30,7 +30,15 @@ class QmlnotesTester
   end
 
   def _current_note
-      @app.Note(:x => @app.NoteRing['x'], :y => @app.NoteRing['y'])
+    @app.Note(:x => @app.NoteRing['x'], :y => @app.NoteRing['y'])
+  end
+
+  def _toolbar
+    # Adventures in TDriver: the ToolBar shows up again inside its own
+    # BorderImage. Probably a confusion between the Qt and QML notions
+    # of "children". So just doing @app.ToolBar makes TDriver complain
+    # that there are two candidates.
+    @app.children(:type => 'ToolBar')[0]
   end
 
   def verify_empty
@@ -55,6 +63,27 @@ class QmlnotesTester
     }
   end
 
+  def verify_page_number(page, maxpage)
+    # The page number is the only Label in the toolbar.
+    # If that ever changes, it probably needs an objectName or something
+    # so that this function can still find it.
+    if page.nil?
+      verify(@timeout, "Expected empty page number") {
+        _toolbar.Label(:text => "")
+      }
+    else
+      expected = "#{page}/#{maxpage}"
+      verify_equal(expected, @timeout, "Expected page #{expected}") {
+        _toolbar.Label['text']
+      }
+    end
+  end
+
+  def verify_label(text)
+    verify { @app.Label(:text => text, :visible => 'true',
+                        :visibleOnScreen => 'true') }
+  end
+
   def flick_note(direction)
     # Even if the currentIndex gets reset to its original value (which can
     # happen if it wraps around a size-1 ring), it should at least briefly
@@ -74,6 +103,10 @@ class QmlnotesTester
     flick_note(:Right)
   end
 
+  def close_keyboard
+    _current_note.QDeclarativeTextEdit.call_method('closeSoftwareInputPanel()')
+  end
+
   def write_note(body)
     _current_note.tap
     verify_equal("true", @timeout,
@@ -91,10 +124,46 @@ class QmlnotesTester
         when ' ' then seq.append!(:kSpace)
         when "\n" then seq.append!(:kEnter)
         when '.' then seq.append!(:kPeriod)
+        when ',' then seq.append!(:kComma)
+        when ';' then seq.append!(:kSemicolon)
+        when "'" then seq.append!(:kApostrophe)
         else raise ArgumentError, "write_note cannot type '#{c}'"
       end
     end
     _current_note.press_key(seq)
+    close_keyboard
+  end
+
+  def note_zoom(type, distance)
+    # Terminology:
+    # type :in means zoom in so fingers move apart
+    # type :out means zoom out so fingers move together
+
+    _current_note.pinch_zoom(:type => type, :speed => 1,
+         :distance_1 => distance, :distance_2 => distance,
+         :differential => 100, :direction => 90)
+  end
+
+  def get_font_size
+    # The font attribute looks like "Sans Serif,24,-1,5,50,0,0,0,0,0"
+    _current_note.QDeclarativeTextEdit['font'].split(',')[1].to_f
+  end
+
+  def tap_tool(iconid)
+    close_keyboard  # make sure toolbar is visible
+    attrs = {:iconId => iconid, :visibleOnScreen => 'true'}
+    _toolbar.ToolIcon(attrs).verify_signal(3, 'clicked()',
+        "Expected clicked signal after tap") {
+      _toolbar.ToolIcon(attrs).tap
+    }
+  end
+
+  def tap_button(text)
+    attrs = {:text => text, :visibleOnScreen => 'true'}
+    @app.Button(attrs).verify_signal(3, 'clicked()',
+        "Expected clicked signal after tap") {
+      @app.Button(attrs).tap
+    }
   end
 
 end
