@@ -9,7 +9,7 @@ cat <<'EOT'
     <set name='functional_tests' description='Functional tests' feature='Notes'>
       <pre_steps>
         <step>qttasserver &amp;</step>
-        <step>sleep 1</step>
+        <step>sleep 60</step>
       </pre_steps>
 EOT
 
