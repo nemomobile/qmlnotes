@@ -5,9 +5,6 @@ cat <<'EOT'
 <testdefinition version='0.1'>
   <suite name='qmlnotes-tests' domain='Applications' type='Functional'>
     <set name='functional_tests' description='Functional tests' feature='Notes'>
-      <pre_steps>
-        <step>qttasserver &amp;</step>
-      </pre_steps>
 EOT
 
 for file in test_*.rb; do
