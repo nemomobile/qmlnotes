@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# There's a sleep after qttasserver to give it time to start before
+# the first test case tries to talk to it. TODO: find better way.
 cat <<'EOT'
 <?xml version='1.0' encoding='UTF-8'?>
 <testdefinition version='0.1'>
@@ -7,6 +9,7 @@ cat <<'EOT'
     <set name='functional_tests' description='Functional tests' feature='Notes'>
       <pre_steps>
         <step>qttasserver &amp;</step>
+        <step>sleep 1</step>
       </pre_steps>
 EOT
 
