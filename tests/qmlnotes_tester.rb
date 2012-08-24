@@ -85,12 +85,13 @@ class QmlnotesTester
   end
 
   def flick_note(direction)
+    width = @app.NoteRing['width'].to_i
     # Even if the currentIndex gets reset to its original value (which can
     # happen if it wraps around a size-1 ring), it should at least briefly
     # take on a new value during the flick.
     @app.NoteRing.QDeclarativeListView.verify_signal(3, 'currentIndexChanged()',
         "Expected current index to change after flick") {
-      @app.NoteRing.QDeclarativeListView.gesture(direction, 0.5, 300,
+      @app.NoteRing.QDeclarativeListView.gesture(direction, 0.5, width/3,
           :use_tap_screen => true)
     }
   end
