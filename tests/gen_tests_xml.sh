@@ -19,12 +19,9 @@ for file in test_*.rb; do
     desc=$(grep '^#DESCRIPTION:' $file | sed -e 's/^#DESCRIPTION: //')
     name=${file%.rb}
     name=${name#test_}
-    # Note: the screen unlock is not done with mcetool because the dbus
-    # policy on Nemo restricts it to root.
     cat <<EOT
       <case name='${name}' description='$desc'>
         <step expected_result='0'>/opt/tests/qmlnotes/notes.sh stash</step>
-        <step expected_result='0'>dbus-send --print-reply --system --dest=com.nokia.mce /nokia/mce/request com.nokia.mce.request.req_tklock_mode_change string:unlocked</step>
         <step expected_result='0'>ruby /opt/tests/qmlnotes/$file</step>
         <step expected_result='0'>/opt/tests/qmlnotes/notes.sh unstash</step>
       </case>

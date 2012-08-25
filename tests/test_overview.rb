@@ -12,7 +12,7 @@ notes = [
 tester.verify_empty
 
 puts "Testing empty overview..."
-tester.tap_tool("toolbar-pages-all")
+tester.tap_tool('toolbarOverviewIcon')
 tester.verify_label("No notes yet")
 tester.tap_button("New note")
 tester.verify_empty
@@ -26,14 +26,14 @@ notes.each { |body|
 
 puts "Testing overview jump..."
 notes.each_with_index { |body, i|
-  tester.tap_tool("toolbar-pages-all")
+  tester.tap_tool('toolbarOverviewIcon')
   title = body.split("\n")[0]
   tester.tap_button("#{i+1}. #{title}")
   tester.verify_note(body)
 }
 
 puts "Testing jump to new note..."
-tester.tap_tool("toolbar-pages-all")
+tester.tap_tool('toolbarOverviewIcon')
 tester.tap_button("New note")
 tester.verify_empty
 

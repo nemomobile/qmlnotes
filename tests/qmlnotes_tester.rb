@@ -8,6 +8,8 @@ class QmlnotesTester
     @app = @sut.run(:name => 'qmlnotes', :restart_if_running => true,
                     :arguments => '-fullscreen,-testability')
     @timeout = nil
+    @next_wake = Time.now - 1
+    wake_display
   end
 
   def kill
@@ -18,6 +20,22 @@ class QmlnotesTester
     @app.close(:check_process => true)
     @app = @sut.run(:name => 'qmlnotes',
                     :arguments => '-fullscreen,-testability')
+  end
+
+  def wake_display
+    # Unlock the screen before trying gestures, but rate-limit it a bit
+    if Time.now >= @next_wake
+      @next_wake = Time.now + 100 
+      # Note: the screen unlock is not done with mcetool because the dbus
+      # policy on Nemo restricts it to root.
+      ok = system("dbus-send", "--print-reply", "--system",
+         "--dest=com.nokia.mce", "/nokia/mce/request",
+         "com.nokia.mce.request.req_tklock_mode_change", "string:unlocked")
+      if (!ok)
+        puts "Failed to unlock display"
+        exit 1
+      end
+    end
   end
 
   def _horiz_overlap(a, b)
@@ -69,12 +87,12 @@ class QmlnotesTester
     # so that this function can still find it.
     if page.nil?
       verify(@timeout, "Expected empty page number") {
-        _toolbar.Label(:text => "")
+        _toolbar.find(:objectName => 'toolbarPageNumber', :text => "")
       }
     else
       expected = "#{page}/#{maxpage}"
       verify_equal(expected, @timeout, "Expected page #{expected}") {
-        _toolbar.Label['text']
+        _toolbar.find(:objectName => 'toolbarPageNumber')['text']
       }
     end
   end
@@ -84,7 +102,20 @@ class QmlnotesTester
                         :visibleOnScreen => 'true') }
   end
 
+  def verify_menu_enabled(text)
+    verify_equal('true', @timeout, "Expected #{text} to be enabled") {
+      @app.MenuItem(:text => text)['enabled']
+    }
+  end
+
+  def verify_menu_disabled(text)
+    verify_equal('false', @timeout, "Expected #{text} to be disabled") {
+      @app.MenuItem(:text => text)['enabled']
+    }
+  end
+
   def flick_note(direction)
+    wake_display
     width = @app.NoteRing['width'].to_i
     # Even if the currentIndex gets reset to its original value (which can
     # happen if it wraps around a size-1 ring), it should at least briefly
@@ -124,6 +155,7 @@ class QmlnotesTester
           seq.append!(:kShift, :KeyUp)
         when ' ' then seq.append!(:kSpace)
         when "\n" then seq.append!(:kEnter)
+        when '?' then seq.append!(:kQuestion)
         when '.' then seq.append!(:kPeriod)
         when ',' then seq.append!(:kComma)
         when ';' then seq.append!(:kSemicolon)
@@ -150,9 +182,10 @@ class QmlnotesTester
     _current_note.QDeclarativeTextEdit['font'].split(',')[1].to_f
   end
 
-  def tap_tool(iconid)
+  def tap_tool(name)
+    wake_display
     close_keyboard  # make sure toolbar is visible
-    attrs = {:iconId => iconid, :visibleOnScreen => 'true'}
+    attrs = {:objectName => name, :visibleOnScreen => 'true'}
     _toolbar.ToolIcon(attrs).verify_signal(3, 'clicked()',
         "Expected clicked signal after tap") {
       _toolbar.ToolIcon(attrs).tap
@@ -160,10 +193,21 @@ class QmlnotesTester
   end
 
   def tap_button(text)
+    wake_display
     attrs = {:text => text, :visibleOnScreen => 'true'}
     @app.Button(attrs).verify_signal(3, 'clicked()',
         "Expected clicked signal after tap") {
       @app.Button(attrs).tap
+    }
+  end
+
+  def tap_menu(text)
+    wake_display
+    close_keyboard  # make sure toolbar is visible
+    tap_tool('toolbarMenuIcon')
+    @app.MenuItem(:text => text).verify_signal(3, 'clicked()',
+        "Expected clicked signal after menu tap") {
+      @app.MenuItem(:text => text).tap
     }
   end
 

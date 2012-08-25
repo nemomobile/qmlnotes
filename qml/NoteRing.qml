@@ -109,6 +109,7 @@ Page {
 
     tools: ToolBarLayout {
         ToolIcon {
+            objectName: 'toolbarOverviewIcon'
             iconId: "toolbar-pages-all"
             onClicked: {
                 pageStack.push(overview)
@@ -116,6 +117,7 @@ Page {
             }
         }
         Label {
+            objectName: 'toolbarPageNumber'
             text: listview.atNewNote ? ""
                   : "" + listview.currentIndex + "/" + listview.lastNote
             // ToolBarLayout doesn't track the width correctly when the
@@ -123,6 +125,7 @@ Page {
             Component.onCompleted: width = paintedWidth * 1.5
         }
         ToolIcon {
+            objectName: 'toolbarMenuIcon'
             iconId: theme.inverted ? "icon-m-toolbar-view-menu-white"
                                    : "icon-m-toolbar-view-menu";
             onClicked: (noteMenu.status == DialogStatus.Closed)
