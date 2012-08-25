@@ -40,6 +40,11 @@ public:
      * this name will not overwrite any other note.
      */
     Q_INVOKABLE QString new_note();
+    /*!
+     * \brief Remove a note from the filesystem
+     * \return true on success
+     */
+    Q_INVOKABLE bool delete_note(const QString & name);
 
 private:
     QString m_directory;

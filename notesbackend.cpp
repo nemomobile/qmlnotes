@@ -51,3 +51,9 @@ QString NotesBackend::new_note()
         }
     }
 }
+
+bool NotesBackend::delete_note(const QString & name)
+{
+    QString fileName(QFileInfo(name).baseName() + ".txt");
+    return QFile::remove(QDir(m_directory).filePath(fileName));
+}

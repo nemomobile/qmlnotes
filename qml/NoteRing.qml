@@ -16,6 +16,8 @@ Page {
     ListModel {
         id: listmodel
 
+        property int deleted_count;
+
         Component.onCompleted: {
             NoteScript.populateRing(listmodel);
             listview.currentIndex = 1;
@@ -119,6 +121,38 @@ Page {
             // ToolBarLayout doesn't track the width correctly when the
             // text changes, so just set a width with some spare space here.
             Component.onCompleted: width = paintedWidth * 1.5
+        }
+        ToolIcon {
+            iconId: theme.inverted ? "icon-m-toolbar-view-menu-white"
+                                   : "icon-m-toolbar-view-menu";
+            onClicked: (noteMenu.status == DialogStatus.Closed)
+                       ? noteMenu.open() : noteMenu.close()
+        }
+    }
+
+    Menu {
+        id: noteMenu
+        visualParent: notering
+
+        MenuLayout {
+            MenuItem {
+                text: "Undelete Note";
+                enabled: listmodel.deleted_count > 0
+                onClicked: {
+                    var index = currentIndex
+                    NoteScript.undeleteNote(listmodel, index)
+                    // focus on the newly undeleted note
+                    currentIndex = index
+                }
+            }
+            MenuItem {
+                text: "Delete Note";
+                enabled: !listview.atNewNote
+                onClicked: {
+                    if (!listview.atNewNote)
+                        NoteScript.deleteNote(listmodel, currentIndex)
+                }
+            }
         }
     }
 }
