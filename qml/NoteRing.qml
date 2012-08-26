@@ -30,8 +30,18 @@ Page {
 
         FocusScope {
             // FocusScope has no geometry of its own
+            id: wrapper
             x: note.x; y: note.y; height: note.height; width: note.width
             focus: ListView.isCurrentItem
+
+            ListView.onRemove: SequentialAnimation {
+               PropertyAction { target: wrapper
+                   property: "ListView.delayRemove"; value: true }
+               NumberAnimation { target: wrapper; property: "opacity"
+                   to: 0; duration: 200; easing.type: Easing.Linear }
+               PropertyAction { target: wrapper
+                   property: "ListView.delayRemove"; value: false }
+            }
 
             Note {
                 id: note
