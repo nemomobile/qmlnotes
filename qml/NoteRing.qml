@@ -101,13 +101,15 @@ Page {
         // make the view snap to the new item when currentIndex changes
         // (1 is the minimum duration, just 1 millisecond)
         highlightMoveDuration: 1
+        // This makes the wraparound handling smoother
+        boundsBehavior: Flickable.StopAtBounds
 
         onCurrentIndexChanged: {
             var max = listmodel.count - 1
             if (max < 2)
                 return;  // listmodel not ready yet
             // Stay away from the edges; wrap around.
-            // The listmodel is specially designed for this.
+            // The listmodel has extra entries at the ends to allow this. 
             if (currentIndex == 0)
                 currentIndex = max - 1
             else if (currentIndex == max)
