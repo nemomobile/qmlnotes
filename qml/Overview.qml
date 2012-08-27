@@ -21,13 +21,28 @@ Page {
         id: delegate
 
         Button {
+            id: notebutton
+            // Use a private MouseArea in order to catch long clicks
+            property alias pressed: buttonmouser.pressed
+
             width: listview.width
             text: model.title
             font.pointSize: 24
+            visible: !model.placeholder
 
             onClicked: {
                 pageStack.pop()
                 pageStack.currentPage.currentIndex = index + 1
+            }
+
+            Component.onCompleted: buttonmouser.clicked.connect(clicked)
+
+            MouseArea {
+                id: buttonmouser
+
+                anchors.fill: parent
+
+                onPressAndHold: dragger.startDragging(parent, index)
             }
         }
     }
@@ -69,5 +84,59 @@ Page {
         font.pointSize: 40
         text: "No notes yet"
         color: "gray"
+    }
+
+    MouseArea {
+        id: dragger
+
+        anchors.fill: parent
+        enabled: false
+        drag.target: dragproxy
+        preventStealing: enabled
+
+        property int index
+        property int origIndex
+
+        function startDragging(item, index) {
+            dragger.index = index
+            dragger.origIndex = index
+            dragproxy.x = item.x
+            dragproxy.y = item.y
+            dragproxy.text = listmodel.get(index).title
+            listmodel.setProperty(index, 'placeholder', true)
+            enabled = true
+        }
+
+        onPositionChanged: {
+            var listy = listview.mapFromItem(dragger, 0,
+                                  dragproxy.y + dragproxy.height / 2).y
+            var newitem = listview.childAt(listview.x + listview.width / 2,
+                                           listy)
+            if (newitem && newitem.index != index) {
+                listmodel.move(index, newitem.index, 1)
+                index = newitem.index
+            }
+        }
+
+        onReleased: {
+            enabled = false
+            listmodel.setProperty(index, 'placeholder', false)
+        }
+
+        onCanceled: {
+            enabled = false
+            listmodel.setProperty(index, 'placeholder', false)
+            listmodel.move(index, origIndex, 1)
+        }
+
+        Button {
+            // styled as a button but not clickable
+            // the parent MouseArea overrides it
+            id: dragproxy
+
+            width: listview.width
+            font.pointSize: 24
+            visible: parent.enabled
+        }
     }
 }
