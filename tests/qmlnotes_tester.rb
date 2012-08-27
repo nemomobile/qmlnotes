@@ -47,6 +47,27 @@ class QmlnotesTester
     return (al >= bl && al < br) || (ar > bl && ar <= br)
   end
 
+  def _wait_to_settle
+    # Wait for a value to stop changing. Call it with a block.
+    # Can be handy to synchronize between interactions
+    prev_value = yield
+    stability = 0
+    timeout = Time.now + 30
+    while Time.now < timeout do
+      sleep 0.1
+      new_value = yield
+      if new_value == prev_value
+        stability += 1
+      else
+        stability = 0
+      end
+      return if stability == 2
+      prev_value = new_value
+    end
+    puts "expected object to settle down"
+    exit 1
+  end
+
   def _current_note
     @app.Note(:x => @app.NoteRing['x'], :y => @app.NoteRing['y'])
   end
@@ -116,6 +137,9 @@ class QmlnotesTester
 
   def flick_note(direction)
     wake_display
+    # When testing on a VM (fast) there's often a problem with flicks
+    # starting too soon after the previous action.
+    sleep 1
     width = @app.NoteRing['width'].to_i
     # Even if the currentIndex gets reset to its original value (which can
     # happen if it wraps around a size-1 ring), it should at least briefly
@@ -137,6 +161,7 @@ class QmlnotesTester
 
   def close_keyboard
     _current_note.QDeclarativeTextEdit.call_method('closeSoftwareInputPanel()')
+    _wait_to_settle { _current_note['height'] }
   end
 
   def write_note(body)
@@ -195,6 +220,7 @@ class QmlnotesTester
   def tap_button(text)
     wake_display
     attrs = {:text => text, :visibleOnScreen => 'true'}
+    _wait_to_settle { @app.Button(attrs).attributes }
     @app.Button(attrs).verify_signal(3, 'clicked()',
         "Expected clicked signal after tap") {
       @app.Button(attrs).tap
@@ -205,6 +231,7 @@ class QmlnotesTester
     wake_display
     close_keyboard  # make sure toolbar is visible
     tap_tool('toolbarMenuIcon')
+    _wait_to_settle { @app.MenuItem(:text => text).attributes }
     @app.MenuItem(:text => text).verify_signal(3, 'clicked()',
         "Expected clicked signal after menu tap") {
       @app.MenuItem(:text => text).tap
