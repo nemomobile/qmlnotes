@@ -63,7 +63,7 @@ function populateTitleList(model) {
             var text = backend.read_note(name)
             var title = text.split("\n")[0]
             title = "" + results.rows.item(i).seq + ". " + title
-            model.append({ "name": name, "title": title, "placeholder": false })
+            model.append({ "name": name, "title": title })
         }
     })
 }

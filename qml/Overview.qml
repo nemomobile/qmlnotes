@@ -28,7 +28,6 @@ Page {
             width: listview.width
             text: model.title
             font.pointSize: 24
-            visible: !model.placeholder
 
             onClicked: {
                 pageStack.pop()
@@ -41,8 +40,53 @@ Page {
                 id: buttonmouser
 
                 anchors.fill: parent
+                preventStealing: drag.active
 
-                onPressAndHold: dragger.startDragging(parent, index)
+                property int dragStartIndex
+
+                onPressAndHold: {
+                    dragStartIndex = index
+                    var conv = dragproxy.parent.mapFromItem(listview,
+                                                            parent.x, parent.y)
+                    dragproxy.x = conv.x
+                    dragproxy.y = conv.y
+                    dragproxy.text = model.title
+                    dragproxy.visible = true
+                    // can't use parent.visible because that cancels our press
+                    parent.opacity = 0
+                    drag.target = dragproxy
+                }
+
+                onPositionChanged: {
+                    // for some reason, directly mapping dragproxy's coords
+                    // to the listview coords gives wrong answers, so start
+                    // from 0 and do it manually.
+                    var adj = listview.mapFromItem(dragproxy.parent, 0, 0).y
+                    // adding adj gives listview view coords
+                    // then add contentY to get listview content coords
+                    var newindex = listview.indexAt(0,
+                         listview.contentY + adj
+                         + dragproxy.y + dragproxy.height / 2)
+                    if (newindex >= 0 && newindex != index) {
+                        console.log("Moving from " + index + " to " + newindex)
+                        listmodel.move(index, newindex, 1)
+                    }
+                }
+
+                onReleased: {
+                    console.log("onReleased")
+                    drag.target = undefined
+                    dragproxy.visible = false
+                    parent.opacity = 100
+                }
+
+                onCanceled: {
+                    console.log("onCanceled")
+                    listmodel.move(index, dragStartIndex, 1)
+                    drag.target = undefined
+                    dragproxy.visible = false
+                    parent.opacity = 100
+                }
             }
         }
     }
@@ -86,57 +130,13 @@ Page {
         color: "gray"
     }
 
-    MouseArea {
-        id: dragger
+    Button {
+        // styled as a button but not used for clicking
+        // it is only active while the dragger has control
+        id: dragproxy
 
-        anchors.fill: parent
-        enabled: false
-        drag.target: dragproxy
-        preventStealing: enabled
-
-        property int index
-        property int origIndex
-
-        function startDragging(item, index) {
-            dragger.index = index
-            dragger.origIndex = index
-            dragproxy.x = item.x
-            dragproxy.y = item.y
-            dragproxy.text = listmodel.get(index).title
-            listmodel.setProperty(index, 'placeholder', true)
-            enabled = true
-        }
-
-        onPositionChanged: {
-            var listy = listview.mapFromItem(dragger, 0,
-                                  dragproxy.y + dragproxy.height / 2).y
-            var newitem = listview.childAt(listview.x + listview.width / 2,
-                                           listy)
-            if (newitem && newitem.index != index) {
-                listmodel.move(index, newitem.index, 1)
-                index = newitem.index
-            }
-        }
-
-        onReleased: {
-            enabled = false
-            listmodel.setProperty(index, 'placeholder', false)
-        }
-
-        onCanceled: {
-            enabled = false
-            listmodel.setProperty(index, 'placeholder', false)
-            listmodel.move(index, origIndex, 1)
-        }
-
-        Button {
-            // styled as a button but not clickable
-            // the parent MouseArea overrides it
-            id: dragproxy
-
-            width: listview.width
-            font.pointSize: 24
-            visible: parent.enabled
-        }
+        width: listview.width
+        font.pointSize: 24
+        visible: false
     }
 }
