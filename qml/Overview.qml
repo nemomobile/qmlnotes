@@ -50,8 +50,12 @@ Page {
                     dragStartIndex = index
                     var conv = dragproxy.parent.mapFromItem(listview,
                                                             parent.x, parent.y)
+                    // First force the x value and skip the animation
                     dragproxy.x = conv.x
-                    dragproxy.y = conv.y
+                    drageffect.complete()
+                    // Then animate to x + 20
+                    dragproxy.x = conv.x + 20
+                    dragproxy.y = conv.y + 2
                     dragproxy.text = model.title
                     dragproxy.visible = true
                     // can't use parent.visible because that cancels our press
@@ -147,5 +151,16 @@ Page {
         width: listview.width
         font.pointSize: 24
         visible: false
+
+        property bool pressed: true // always style as pressed
+
+        Behavior on x {
+            NumberAnimation {
+                id: drageffect
+                duration: 50
+                easing.type: Easing.OutBack
+                easing.overshoot: 20
+            }
+        }
     }
 }
