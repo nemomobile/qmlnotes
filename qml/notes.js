@@ -89,6 +89,30 @@ function registerNewNote(model, index, name) {
     })
 }
 
+function moveNote(listmodel, oldIndex, newIndex) {
+    var db = openDb();
+    db.transaction(function (tx) {
+        // Perform this as a rotation of a range of sequence numbers
+        // for example moving 2 to position 4 in a sequence [1,2,3,4,5]
+        // means mapping the [2,3,4] part to [3,4,2] which is a left rotation.
+        var rangeStart = Math.min(oldIndex, newIndex)
+        var rangeEnd = Math.max(oldIndex, newIndex)
+        var rangeLen = rangeEnd - rangeStart + 1
+        var adj = oldIndex < newIndex ? rangeLen - 1 : +1
+        // adjust seq to be 0-based from rangeStart, then adjust and mod,
+        // then add rangeStart back in again.
+        tx.executeSql('UPDATE notes SET seq = ((seq - ? + ?) % ?) + ?'
+                    + 'WHERE seq >= ? AND seq <= ?',
+            [rangeStart, adj, rangeLen, rangeStart, rangeStart, rangeEnd])
+    })
+    listmodel.move(oldIndex, newIndex, 1)
+    if (oldIndex == 1 || newIndex == 1) {
+        // fix up the sentinel at the end
+        listmodel.setProperty(listmodel.count - 1,
+                              "name", listmodel.get(1).name)
+    }
+}
+
 function deleteNote(model, index, body) {
     var db = openDb();
     var name = model.get(index).name;

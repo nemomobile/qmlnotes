@@ -11,6 +11,8 @@ Page {
 
     property alias currentIndex: listview.currentIndex
 
+    signal noteDragged(int oldNumber, int newNumber)
+
     ListModel {
         id: listmodel
 
@@ -58,6 +60,8 @@ Page {
                 }
 
                 onPositionChanged: {
+                    if (drag.target == undefined)
+                        return
                     // for some reason, directly mapping dragproxy's coords
                     // to the listview coords gives wrong answers, so start
                     // from 0 and do it manually.
@@ -68,20 +72,25 @@ Page {
                          listview.contentY + adj
                          + dragproxy.y + dragproxy.height / 2)
                     if (newindex >= 0 && newindex != index) {
-                        console.log("Moving from " + index + " to " + newindex)
                         listmodel.move(index, newindex, 1)
                     }
                 }
 
                 onReleased: {
-                    console.log("onReleased")
+                    if (drag.target == undefined)
+                        return
                     drag.target = undefined
                     dragproxy.visible = false
                     parent.opacity = 100
+                    if (dragStartIndex != index) {
+                        // emit signal with 1-based page numbers
+                        noteDragged(dragStartIndex + 1, index + 1)
+                    }
                 }
 
                 onCanceled: {
-                    console.log("onCanceled")
+                    if (drag.target == undefined)
+                        return
                     listmodel.move(index, dragStartIndex, 1)
                     drag.target = undefined
                     dragproxy.visible = false

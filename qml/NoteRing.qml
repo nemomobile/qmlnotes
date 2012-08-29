@@ -127,7 +127,9 @@ Page {
         // time it is pushed; that way it reloads the note title list.
         id: overview
 
-        Overview { }
+        Overview {
+            onNoteDragged: NoteScript.moveNote(listmodel, oldNumber, newNumber)
+        }
     }
 
     tools: ToolBarLayout {
