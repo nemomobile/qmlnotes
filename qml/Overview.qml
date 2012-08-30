@@ -48,8 +48,10 @@ Page {
 
                 onPressAndHold: {
                     dragStartIndex = index
+                    console.log("long press at " + mouse.x + " " + mouse.y)
                     var conv = dragproxy.parent.mapFromItem(listview,
                                                             parent.x, parent.y)
+                    console.log("conv to " + conv.x + " " + conv.y)
                     // First force the x value and skip the animation
                     dragproxy.x = conv.x
                     drageffect.complete()
@@ -127,6 +129,36 @@ Page {
         clip: true  // don't overlap the new note button
         model: listmodel
         delegate: delegate
+
+        NumberAnimation {
+            id: scrollToEnd
+            running: dragproxy.visible
+                     && dragproxy.bottom > listview.bottom - 24
+                     && listview.contentHeight > listview.height
+            target: listview
+            property: "contentY"
+            to: Math.max(0, listview.contentHeight - listview.height)
+            easing.type: Easing.Linear
+            // use duration as a proxy to set speed
+            duration: Math.abs(listview.contentY - listview.contentHeight
+                               + listview.height) / listview.height
+        }
+
+        NumberAnimation {
+            id: scrollToStart
+            running: dragproxy.visible
+                  && dragproxy.y < listview.y
+                  && listview.contentHeight > listview.height
+                  && listview.contentY > 0
+            target: listview
+            property: "contentY"
+            to: 0
+            easing.type: Easing.Linear
+            // use duration as a proxy to set speed
+            duration: listview.contentY / listview.height
+        }
+
+        onContentHeightChanged: console.log("content height: " + contentHeight)
     }
 
     ScrollDecorator {
@@ -161,6 +193,14 @@ Page {
                 easing.type: Easing.OutBack
                 easing.overshoot: 20
             }
+        }
+    }
+
+    tools: ToolBarLayout {
+        ToolIcon {
+            objectName: 'toolbarBackFromOverview'
+            iconId: "toolbar-back"
+            onClicked: pageStack.pop()
         }
     }
 }
