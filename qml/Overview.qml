@@ -130,7 +130,7 @@ Page {
         model: listmodel
         delegate: delegate
 
-        NumberAnimation {
+        SmoothedAnimation {
             id: scrollToEnd
             running: dragproxy.visible
                      && dragproxy.bottom > listview.bottom - 24
@@ -138,13 +138,9 @@ Page {
             target: listview
             property: "contentY"
             to: Math.max(0, listview.contentHeight - listview.height)
-            easing.type: Easing.Linear
-            // use duration as a proxy to set speed
-            duration: Math.abs(listview.contentY - listview.contentHeight
-                               + listview.height) / listview.height
         }
 
-        NumberAnimation {
+        SmoothedAnimation {
             id: scrollToStart
             running: dragproxy.visible
                   && dragproxy.y < listview.y
@@ -153,9 +149,6 @@ Page {
             target: listview
             property: "contentY"
             to: 0
-            easing.type: Easing.Linear
-            // use duration as a proxy to set speed
-            duration: listview.contentY / listview.height
         }
 
         onContentHeightChanged: console.log("content height: " + contentHeight)
