@@ -48,16 +48,12 @@ Page {
 
                 onPressAndHold: {
                     dragStartIndex = index
-                    console.log("long press at " + mouse.x + " " + mouse.y)
-                    var conv = dragproxy.parent.mapFromItem(listview,
-                                                            parent.x, parent.y)
-                    console.log("conv to " + conv.x + " " + conv.y)
                     // First force the x value and skip the animation
-                    dragproxy.x = conv.x
+                    dragproxy.x = parent.x - listview.contentX + listview.x
                     drageffect.complete()
                     // Then animate to x + 20
-                    dragproxy.x = conv.x + 20
-                    dragproxy.y = conv.y + 2
+                    dragproxy.x = dragproxy.x + 20
+                    dragproxy.y = parent.y - listview.contentY + listview.y
                     dragproxy.text = model.title
                     dragproxy.visible = true
                     // can't use parent.visible because that cancels our press
@@ -68,18 +64,19 @@ Page {
                 onPositionChanged: {
                     if (drag.target == undefined)
                         return
-                    // for some reason, directly mapping dragproxy's coords
-                    // to the listview coords gives wrong answers, so start
-                    // from 0 and do it manually.
-                    var adj = listview.mapFromItem(dragproxy.parent, 0, 0).y
-                    // adding adj gives listview view coords
-                    // then add contentY to get listview content coords
-                    var newindex = listview.indexAt(0,
-                         listview.contentY + adj
-                         + dragproxy.y + dragproxy.height / 2)
-                    if (newindex >= 0 && newindex != index) {
+                    var dy = dragproxy.y - listview.y + listview.contentY
+                    // get item under dragproxy's center line
+                    dy += dragproxy.height / 2
+                    var newindex = listview.indexAt(0, dy)
+                    // go to first or last position if dy is outside the list
+                    if (newindex < 0 && dy < 0)
+                        newindex = 0
+                    if (newindex < 0 && dy > listview.contentHeight)
+                        newindex = listview.count - 1
+                    // move the invisible button to where the dragproxy
+                    // would be dropped if it were released right now
+                    if (newindex >= 0 && newindex != index)
                         listmodel.move(index, newindex, 1)
-                    }
                 }
 
                 onReleased: {
@@ -133,7 +130,8 @@ Page {
         SmoothedAnimation {
             id: scrollToEnd
             running: dragproxy.visible
-                     && dragproxy.bottom > listview.bottom - 24
+                     && dragproxy.y + dragproxy.height / 2
+                          > listview.y + listview.height
                      && listview.contentHeight > listview.height
             target: listview
             property: "contentY"
@@ -150,8 +148,6 @@ Page {
             property: "contentY"
             to: 0
         }
-
-        onContentHeightChanged: console.log("content height: " + contentHeight)
     }
 
     ScrollDecorator {
