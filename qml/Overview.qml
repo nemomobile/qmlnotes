@@ -176,6 +176,7 @@ Page {
         width: listview.width
         font.pointSize: 24
         visible: false
+        z: parent.z + 2
 
         property bool pressed: true // always style as pressed
 
