@@ -24,6 +24,7 @@ Page {
 
         Button {
             id: notebutton
+            objectName: 'overviewbutton'
             // Use a private MouseArea in order to catch long clicks
             property alias pressed: buttonmouser.pressed
 
@@ -118,6 +119,7 @@ Page {
 
     ListView {
         id: listview
+        objectName: 'overviewlist'
 
         anchors {
             top: newbutton.bottom; bottom: parent.bottom

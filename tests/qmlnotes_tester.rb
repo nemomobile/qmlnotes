@@ -1,5 +1,11 @@
+require 'set'
 require 'tdriver'
 include TDriverVerify
+
+# The purpose of this class is to encapsulate knowledge about the
+# structure of the QMLNotes UI and the TDriver commands so that
+# the test cases can be written in terms of user actions (flick,
+# drag, tap) and user observables ("what is the text of the visible note?")
 
 class QmlnotesTester
 
@@ -10,6 +16,7 @@ class QmlnotesTester
     @timeout = nil
     @next_wake = Time.now - 1
     wake_display
+    @last_object_finder = Proc.new { nil }
   end
 
   def kill
@@ -36,6 +43,18 @@ class QmlnotesTester
         exit 1
       end
     end
+  end
+
+  def create_notes_fixture(notes)
+    # Create notes efficiently by bypassing the UI actions.
+    # This cannot be used to test note creation! It just helps
+    # set things up quickly for other tests.
+    index = @app.NoteRing.QDeclarativeListView['lastNote'].to_i + 1
+    notes.each { |body|
+      @app.NoteRing.set_attribute(:currentIndex, index)
+      @app.Note(:index => index.to_s).set_attribute(:text, body)
+      index += 1
+    }
   end
 
   def _horiz_overlap(a, b)
@@ -80,6 +99,13 @@ class QmlnotesTester
     @app.children(:type => 'ToolBar')[0]
   end
 
+  def _last_object(&block)
+    if block_given?
+      @last_object_finder = block
+    end
+    @last_object_finder.call
+  end
+
   def verify_empty
     verify_equal('', @timeout, "expected empty Note page") {
       _current_note['text']
@@ -89,6 +115,18 @@ class QmlnotesTester
   def verify_note(body)
     verify_equal(body, @timeout, "did not find expected note text") {
       _current_note['text']
+    }
+  end
+
+  def verify_next_note(body)
+    # This still counts as a user observable because the user can see
+    # it when dragging or flicking, even if the NoteRing logic then
+    # moves the index to the other end of the ring (which prevents it
+    # from being observed through verify_note)
+    index = (_current_note['index'].to_i + 1).to_s
+    verify_equal(body, @timeout,
+                 "did not find expected text in note #{index}") {
+      @app.Note(:index => index)['text']
     }
   end
 
@@ -132,6 +170,23 @@ class QmlnotesTester
   def verify_menu_disabled(text)
     verify_equal('false', @timeout, "Expected #{text} to be disabled") {
       @app.MenuItem(:text => text)['enabled']
+    }
+  end
+
+  def verify_overview(titles)
+    entries = nil
+    verify_equal(titles.length) {
+      entries = @app.children(:type => 'Button',
+                              :objectName => 'overviewButton')
+      entries.length
+    }
+    entries.sort_by! { |e| e['y'].to_i }
+    titles.each_with_index { |title, i|
+      if title.nil?
+        verify_equal('0', entries[i]['opacity'])
+      else
+        verify_equal(title, entries[i]['text'])
+      end
     }
   end
 
@@ -238,4 +293,25 @@ class QmlnotesTester
     }
   end
 
+  def overview_tap_down(text)
+    wake_display
+    attrs = {:type => 'Button', :text => text, :visibleOnScreen => 'true'}
+    _wait_to_settle { @app.Overview.attributes }
+    button = _last_object { @app.Overview.child(attrs) }
+    button.tap_down
+  end
+
+  def overview_drag_down(heights)
+    wake_display
+    verify_equal('Button') { @last_object.type }
+    button = _last_object
+    distance = heights * button['height'].to_i
+    button.move(:Down, distance, :Left, :use_tap_screen => true)
+  end
+
+  def overview_release
+    wake_display
+    _wait_to_settle { _last_object['y'] }
+    _last_object.tap_up
+  end
 end
