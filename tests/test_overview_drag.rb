@@ -21,19 +21,21 @@ puts "Opening the overview list..."
 tester.tap_tool('toolbarOverviewIcon')
 tester.verify_overview(titles)
 
-puts "Dragging the first note down..."
-tester.overview_tap_down("1. one")
+puts "Testing effect of long press..."
+tester.overview_tap_down("2. two")
 sleep 1  # long press
-tester.verify_overview([nil] + titles[1..-1])
-tester.overview_drag_down(2)
-tester.verify_overview(titles[1..2] + [nil] + titles[3..-1])
+tester.verify_overview(titles[0..0] + [nil] + titles[2..-1])
 tester.overview_release
+tester.verify_overview(titles)
+
+puts "Dragging the first note down..."
+tester.overview_drag_down("1. one", 2)
 titles = titles[1..2] + titles[0..0] + titles[3..-1]
 tester.verify_overview(titles)
 
 puts "Checking that notes were rearranged..."
 notes = notes[1..2] + notes[0..0] + notes[3..-1]
-tester.tap_button("2. two")
+tester.tap_overview("2. two")
 
 notes.each_with_index { |body, i|
   tester.verify_page_number(i+1, notes.length)

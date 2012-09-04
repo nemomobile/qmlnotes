@@ -23,7 +23,6 @@ Page {
         id: delegate
 
         Button {
-            id: notebutton
             objectName: 'overviewbutton'
             // Use a private MouseArea in order to catch long clicks
             property alias pressed: buttonmouser.pressed
@@ -170,6 +169,7 @@ Page {
         // styled as a button but not used for clicking
         // it is only active while the dragger has control
         id: dragproxy
+        objectName: 'dragproxy'
 
         width: listview.width
         font.pointSize: 24

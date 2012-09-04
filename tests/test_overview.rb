@@ -28,7 +28,7 @@ puts "Testing overview jump..."
 notes.each_with_index { |body, i|
   tester.tap_tool('toolbarOverviewIcon')
   title = body.split("\n")[0]
-  tester.tap_button("#{i+1}. #{title}")
+  tester.tap_overview("#{i+1}. #{title}")
   tester.verify_note(body)
 }
 

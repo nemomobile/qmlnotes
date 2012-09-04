@@ -176,16 +176,15 @@ class QmlnotesTester
   def verify_overview(titles)
     entries = nil
     verify_equal(titles.length) {
-      entries = @app.children(:type => 'Button',
-                              :objectName => 'overviewButton')
+      entries = @app.children(:objectName => 'overviewbutton')
       entries.length
     }
     entries.sort_by! { |e| e['y'].to_i }
     titles.each_with_index { |title, i|
       if title.nil?
-        verify_equal('0', entries[i]['opacity'])
+        verify_equal('0') { entries[i]['opacity'] }
       else
-        verify_equal(title, entries[i]['text'])
+        verify_equal(title) { entries[i]['text'] }
       end
     }
   end
@@ -282,6 +281,19 @@ class QmlnotesTester
     }
   end
 
+  def tap_overview(text)
+    wake_display
+    # For some reason the Buttons in the overview list started
+    # showing up as QDeclarativeLoader after they got the property
+    # alias for 'pressed', so search for them by objectName instead of type.
+    attrs = {:text => text, :objectName => 'overviewbutton'}
+    _wait_to_settle { @app.find(attrs).attributes }
+    @app.find(attrs).verify_signal(3, 'clicked()',
+        "Expected clicked signal after tap") {
+      @app.find(attrs).tap
+    }
+  end
+
   def tap_menu(text)
     wake_display
     close_keyboard  # make sure toolbar is visible
@@ -295,23 +307,35 @@ class QmlnotesTester
 
   def overview_tap_down(text)
     wake_display
-    attrs = {:type => 'Button', :text => text, :visibleOnScreen => 'true'}
-    _wait_to_settle { @app.Overview.attributes }
-    button = _last_object { @app.Overview.child(attrs) }
-    button.tap_down
-  end
-
-  def overview_drag_down(heights)
-    wake_display
-    verify_equal('Button') { @last_object.type }
-    button = _last_object
-    distance = heights * button['height'].to_i
-    button.move(:Down, distance, :Left, :use_tap_screen => true)
+    attrs = {:text => text, :objectName => 'overviewbutton'}
+    _wait_to_settle { @app.find(attrs).attributes }
+    @app.find(attrs).tap_down
+    _wait_to_settle { @app.find(:objectName => 'dragproxy')['y'] }
   end
 
   def overview_release
     wake_display
-    _wait_to_settle { _last_object['y'] }
-    _last_object.tap_up
+    # The button might be invisible by now and then we can't call tap_up
+    # on it. Subsitute a button release somewhere else.
+    @app.find(:objectName => 'overviewlist').tap_up
   end
+
+  def overview_drag_down(text, heights)
+    wake_display
+    attrs = {:text => text, :objectName => 'overviewbutton'}
+    button = @app.find(attrs)
+    distance = heights * button['height'].to_i
+    x = button['x_absolute'].to_i + button['width'].to_i / 2
+    y = button['y_absolute'].to_i + button['height'].to_i / 2
+    increment = button['height'].to_i / 3
+    points = [{'x' => x, 'y' => y, 'interval' => 1}]
+    duration = 1
+    (heights*3).times { |i|
+      points << {'x' => x, 'y' => (y + (i+1) * increment).to_i,
+                 'interval' => 0.1}
+      duration += 0.1
+    }
+    button.gesture_points(points, duration, {}, :use_tap_screen => true)
+  end
+
 end
