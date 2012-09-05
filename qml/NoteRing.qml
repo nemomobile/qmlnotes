@@ -88,7 +88,6 @@ Page {
         delegate: delegate
         orientation: ListView.Horizontal
         snapMode: ListView.SnapToItem
-        cacheBuffer: notering.width * 5
         spacing: notering.spacing
         // no idea what unit this is, but this value feels ok in tests
         // if deceleration is too low then it's hard to flick just 1 page.
