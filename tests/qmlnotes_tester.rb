@@ -123,6 +123,7 @@ class QmlnotesTester
     # it when dragging or flicking, even if the NoteRing logic then
     # moves the index to the other end of the ring (which prevents it
     # from being observed through verify_note)
+    _current_note.drag(:Left, 50, :Left, :use_tap_screen => true)
     index = (_current_note['index'].to_i + 1).to_s
     verify_equal(body, @timeout,
                  "did not find expected text in note #{index}") {
