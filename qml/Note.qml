@@ -18,6 +18,10 @@ Item {
         editor.busy = false;
     }
 
+    property alias selectActive: editor.selectByMouse
+
+    onSelectActiveChanged: if (selectActive) editor.selectAll()
+
     signal newNote;
 
     // fontScale and handlePinch are normally overridden by NoteRing in
@@ -65,6 +69,7 @@ Item {
             smooth: editorview.moving == false
             focus: true
             font.pointSize: 24 * note.fontScale
+            activeFocusOnPress: !note.selectActive
 
             // this keeps it from immediately saving after loading, etc.
             property bool busy: false
@@ -98,7 +103,29 @@ Item {
             color: "brown"
             opacity: 0.2
         }
+    }
 
+    Row {
+        id: cutnpaster
+        visible: note.selectActive
+        anchors.bottom: editorview.bottom
+        anchors.right: editorview.right
+
+        ToolButton {
+            text: "Cut"
+            enabled: editor.selectionStart < editor.selectionEnd
+            onClicked: editor.cut()
+        }
+        ToolButton {
+            text: "Copy"
+            enabled: editor.selectionStart < editor.selectionEnd
+            onClicked: editor.copy()
+        }
+        ToolButton {
+            text: "Paste"
+            enabled: editor.canPaste
+            onClicked: editor.paste()
+        }
     }
 
     ScrollDecorator {

@@ -12,6 +12,7 @@ Page {
     property alias currentIndex: listview.currentIndex
     property int spacing: 2
     property real globalFontScale: 1.0
+    property bool globalSelectActive: false
 
     ListModel {
         id: listmodel
@@ -39,6 +40,7 @@ Page {
                 property int index: model.index
                 width: notering.width; height: notering.height
                 fontScale: globalFontScale
+                selectActive: parent.focus && globalSelectActive
 
                 function handlePinch(pinch) {
                     globalFontScale = globalFontScale * pinch.scale
@@ -140,13 +142,33 @@ Page {
                 pageStack.currentPage.currentIndex = currentIndex - 1
             }
         }
+        ToolIcon {
+            // insert this as a placeholder to balance the toolbar
+            objectName: 'toolbarFindIcon'
+            iconId: "toolbar-search"
+        }
         Label {
             objectName: 'toolbarPageNumber'
             text: listview.atNewNote ? ""
                   : "" + listview.currentIndex + "/" + listview.lastNote
             // ToolBarLayout doesn't track the width correctly when the
             // text changes, so just set a width with some spare space here.
-            Component.onCompleted: width = paintedWidth * 1.5
+            Component.onCompleted: width = paintedWidth * 2
+        }
+        ToolIcon {
+            objectName: 'toolbarSelectIcon'
+            iconId: "toolbar-cut-paste"
+            onClicked: globalSelectActive = !globalSelectActive
+
+            Rectangle {
+                // temporary measure until there is a -white icon for this
+                border { color: "white"; width: 2 }
+                width: 36; height: 36
+                radius: 5
+                anchors.centerIn: parent
+                visible: globalSelectActive
+                color: "transparent"
+            }
         }
         ToolIcon {
             objectName: 'toolbarMenuIcon'
