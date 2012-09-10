@@ -49,9 +49,9 @@ class QmlnotesTester
     # Create notes efficiently by bypassing the UI actions.
     # This cannot be used to test note creation! It just helps
     # set things up quickly for other tests.
-    index = @app.NoteRing.QDeclarativeListView['lastNote'].to_i + 1
+    index = @app.find(:objectName => 'noteringView')['lastNote'].to_i + 1
     notes.each { |body|
-      @app.NoteRing.set_attribute(:currentIndex, index)
+      @app.find(:objectName => 'notering').set_attribute(:currentIndex, index)
       @app.Note(:index => index.to_s).set_attribute(:text, body)
       index += 1
     }
@@ -88,7 +88,8 @@ class QmlnotesTester
   end
 
   def _current_note
-    @app.Note(:x => @app.NoteRing['x'], :y => @app.NoteRing['y'])
+    notering = @app.child(:objectName => 'notering')
+    @app.Note(:x => notering['x'], :y => notering['y'])
   end
 
   def _toolbar
@@ -133,10 +134,10 @@ class QmlnotesTester
 
   def verify_index(index)
     verify(@timeout, "expected current note #{index}") {
-      @app.NoteRing.QDeclarativeListView(:currentIndex => index.to_s)
+      @app.find(:objectName => 'noteringView', :currentIndex => index.to_s)
     }
     verify(@timeout, "expected current note to be in view") {
-      listview = @app.NoteRing.QDeclarativeListView
+      listview = @app.find(:objectName => 'noteringView')
       _horiz_overlap(listview.Note(:index => index.to_s), listview)
     }
   end
@@ -195,13 +196,13 @@ class QmlnotesTester
     # When testing on a VM (fast) there's often a problem with flicks
     # starting too soon after the previous action.
     sleep 1
-    width = @app.NoteRing['width'].to_i
+    width = @app.find(:objectName => 'notering')['width'].to_i
     # Even if the currentIndex gets reset to its original value (which can
     # happen if it wraps around a size-1 ring), it should at least briefly
     # take on a new value during the flick.
-    @app.NoteRing.QDeclarativeListView.verify_signal(3, 'currentIndexChanged()',
-        "Expected current index to change after flick") {
-      @app.NoteRing.QDeclarativeListView.gesture(direction, 0.5, width/3,
+    @app.find(:objectName => 'noteringView').verify_signal(3,
+      'currentIndexChanged()', "Expected current index to change after flick") {
+      @app.find(:objectName => 'noteringView').gesture(direction, 0.5, width/3,
           :use_tap_screen => true)
     }
   end

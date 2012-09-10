@@ -8,6 +8,7 @@ import "notes.js" as NoteScript
 
 Page {
     id: notering
+    objectName: "notering"
 
     property alias currentIndex: listview.currentIndex
     property int spacing: 2
@@ -86,6 +87,7 @@ Page {
 
     ListView {
         id: listview
+        objectName: "noteringView"
 
         anchors.fill: parent
         model: listmodel
