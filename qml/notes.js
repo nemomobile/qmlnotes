@@ -156,3 +156,73 @@ function undeleteNote(model, index) {
         model.insert(index, { "name": name })
     })
 }
+
+function findFrom(model, dir, index, pos, text) {
+    var pages = model.count - 3
+    if (pages <= 0)
+        return undefined   // empty ring
+    if (index == 0 || index > pages) // at empty note
+        index = 1
+    if (dir == "next")
+        return _findNext(model, index, pos, text)
+    else
+        return _findPrev(model, index, pos, text)
+}
+
+function _findNext(model, index, pos, text) {
+    var note = backend.read_note(model.get(index).name)
+    // If the search string is all lowercase then do a case insensitive search
+    if (text.toLowerCase() == text)
+        note = note.toLowerCase()
+    var found = note.substring(pos + 1).indexOf(text)
+    if (found >= 0)
+        return { 'page': index, 'pos': found + pos + 1 }
+
+    // Not found in current note. Try going around the ring.
+    var pages = model.count - 3
+    for (var n = 1; n < pages; n++) {
+        var i = index + n
+        if (i > pages)
+            i = i - pages + 1
+        var note_i = backend.read_note(model.get(i).name)
+        if (text.toLowerCase() == text)
+            note_i = note_i.toLowerCase()
+        found = note_i.indexOf(text)
+        if (found >= 0)
+            return { 'page': i, 'pos': found }
+    }
+
+    // Not found in other notes. Try wrapping around to current note.
+    found = note.substring(0, pos + text.length).indexOf(text)
+    if (found >= 0)
+        return { 'page': index, 'pos': found }
+}
+
+function _findPrev(model, index, pos, text) {
+    var note = backend.read_note(model.get(index).name)
+    // If the search string is all lowercase then do a case insensitive search
+    if (text.toLowerCase() == text)
+        note = note.toLowerCase()
+    var found = note.substring(0, pos).lastIndexOf(text)
+    if (found >= 0)
+        return { 'page': index, 'pos': found }
+
+    // Not found in current note. Try going around the ring.
+    var pages = model.count - 3
+    for (var n = 1; n < pages; n++) {
+        var i = index - n
+        if (i < 1)
+            i = i + pages
+        var note_i = backend.read_note(model.get(i).name)
+        if (text.toLowerCase() == text)
+            note_i = note_i.toLowerCase()
+        found = note_i.lastIndexOf(text)
+        if (found >= 0)
+            return { 'page': i, 'pos': found }
+    }
+
+    // Not found in other notes. Try wrapping around to current note.
+    found = note.substring(pos).lastIndexOf(text)
+    if (found >= 0)
+        return { 'page': index, 'pos': found + pos }
+}

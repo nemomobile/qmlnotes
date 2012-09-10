@@ -9,6 +9,7 @@ Item {
 
     property string name: ''
     property alias text: editor.text
+    property alias cursorPosition: editor.cursorPosition
 
     onNameChanged: {
         if (name == '' || editor.busy)
@@ -29,6 +30,16 @@ Item {
     // provided here in a way that allows Note to be used on its own too.
     property real fontScale: 1.0
     function handlePinch(pinch) { fontScale = fontScale * pinch.scale }
+
+    function showSearch(from, to) {
+        editor.select(to, from)  // this leaves the cursor at "from"
+        // center view on selection
+        var top = editor.positionToRectangle(from)
+        var bot = editor.positionToRectangle(to - 1)
+        var destY = (top.y + bot.y + bot.height) / 2 - editorview.height / 2
+        editorview.contentY = Math.max(0, destY)
+    }
+    function releaseSearch() { editor.deselect() }
 
     Flickable {
         id: editorview

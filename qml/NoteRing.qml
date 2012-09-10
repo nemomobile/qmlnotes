@@ -34,6 +34,8 @@ Page {
             x: note.x; y: note.y; height: note.height; width: note.width
             focus: ListView.isCurrentItem
 
+            property Item note: note // to make listview.currentItem.note work
+
             Note {
                 id: note
                 name: model.name
@@ -146,6 +148,7 @@ Page {
             // insert this as a placeholder to balance the toolbar
             objectName: 'toolbarFindIcon'
             iconId: "toolbar-search"
+            onClicked: findbar.visible = !findbar.visible
         }
         Label {
             objectName: 'toolbarPageNumber'
@@ -201,6 +204,77 @@ Page {
                     if (!listview.atNewNote)
                         listview.currentItem.state = "DELETE"
                 }
+            }
+        }
+    }
+
+    Rectangle {
+        id: findbar
+        objectName: "findBar"
+        anchors.bottom: listview.bottom
+        width: parent.width
+        height: findbartextinput.height + 4
+        visible: false
+        border.color: "brown"
+        border.width: 4
+        color: "gray"
+        z: listview.z + 1
+
+        property alias text: findbartextinput.text
+
+        function find(dir) {
+            listview.currentItem.note.releaseSearch()
+            var found = NoteScript.findFrom(listmodel, dir,
+                listview.currentIndex, listview.currentItem.note.cursorPosition,
+                text)
+            if (found) {
+                listview.currentIndex = found.page
+                listview.currentItem.note.showSearch(
+                    found.pos, found.pos + text.length)
+            }
+        }
+
+        onVisibleChanged: listview.currentItem.note.releaseSearch()
+
+        Text {
+            id: findbarlabel
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            text: "Find: "
+            font.pointSize: 24
+            height: parent.height
+        }
+        TextField {
+            id: findbartextinput
+            objectName: "findBarTextInput"
+            anchors.left: findbarlabel.right
+            anchors.right: findbartools.left
+            anchors.verticalCenter: parent.verticalCenter
+            width: parent.width - findbarlabel.width - findbartools.width
+            font.pointSize: 24
+            focus: findbar.visible
+            onAccepted: findbar.find("next")
+        }
+        Row {
+            id: findbartools
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: parent.right
+            ToolIcon {
+                objectName: "findBarPrev"
+                iconId: 'toolbar-previous'
+                enabled: findbar.text != ''
+                onClicked: findbar.find("prev")
+            }
+            ToolIcon {
+                objectName: "findBarNext"
+                iconId: 'toolbar-next'
+                enabled: findbar.text != ''
+                onClicked: findbar.find("next")
+            }
+            ToolIcon {
+                objectName: "findBarHide"
+                iconId: 'toolbar-close-white'
+                onClicked: findbar.visible = false
             }
         }
     }
