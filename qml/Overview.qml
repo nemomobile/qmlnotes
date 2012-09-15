@@ -84,7 +84,7 @@ Page {
                         return
                     drag.target = undefined
                     dragproxy.visible = false
-                    parent.opacity = 100
+                    parent.opacity = 1
                     if (dragStartIndex != index) {
                         // emit signal with 1-based page numbers
                         noteDragged(dragStartIndex + 1, index + 1)
@@ -97,7 +97,7 @@ Page {
                     listmodel.move(index, dragStartIndex, 1)
                     drag.target = undefined
                     dragproxy.visible = false
-                    parent.opacity = 100
+                    parent.opacity = 1
                 }
             }
         }
