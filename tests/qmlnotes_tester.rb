@@ -49,7 +49,7 @@ class QmlnotesTester
     # Create notes efficiently by bypassing the UI actions.
     # This cannot be used to test note creation! It just helps
     # set things up quickly for other tests.
-    index = @app.find(:objectName => 'noteringView')['lastNote'].to_i + 1
+    index = @app.find(:objectName => 'noteringView')['count'].to_i - 2
     notes.each { |body|
       @app.find(:objectName => 'notering').set_attribute(:currentIndex, index)
       @app.Note(:index => index.to_s).set_attribute(:text, body)
