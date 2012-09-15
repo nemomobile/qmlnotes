@@ -6,5 +6,8 @@ import com.nokia.meego 1.0
 import "qml"
 
 PageStackWindow {
-    initialPage: NoteRing { }
+    initialPage: NoteRing {
+        objectName: "notering"
+        notemodel: NoteModel { }
+    }
 }

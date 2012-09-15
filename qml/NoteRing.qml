@@ -8,24 +8,12 @@ import "notes.js" as NoteScript
 
 Page {
     id: notering
-    objectName: "notering"
 
     property alias currentIndex: listview.currentIndex
     property int spacing: 2
     property real globalFontScale: 1.0
     property bool globalSelectActive: false
-
-    ListModel {
-        id: listmodel
-
-        property int deleted_count;
-
-        Component.onCompleted: {
-            NoteScript.populateRing(listmodel);
-            listview.currentIndex = 1;
-            listview.positionViewAtIndex(1, ListView.Contain)
-        }
-    }
+    property ListModel notemodel
 
     Component {
         id: delegate
@@ -49,7 +37,7 @@ Page {
                     globalFontScale = globalFontScale * pinch.scale
                 }
 
-                onNewNote: NoteScript.registerNewNote(listmodel, index, name)
+                onNewNote: NoteScript.registerNewNote(notemodel, index, name)
 
                 Rectangle {
                     id: noteborder
@@ -77,7 +65,7 @@ Page {
                             duration: 500; easing.type: Easing.Linear
                         }
                         ScriptAction {
-                            script: NoteScript.deleteNote(listmodel, index)
+                            script: NoteScript.deleteNote(notemodel, index)
                         }
                     }
                 }
@@ -90,7 +78,7 @@ Page {
         objectName: "noteringView"
 
         anchors.fill: parent
-        model: listmodel
+        model: notemodel
         delegate: delegate
         orientation: ListView.Horizontal
         snapMode: ListView.SnapToItem
@@ -110,20 +98,24 @@ Page {
         boundsBehavior: Flickable.StopAtBounds
 
         onCurrentIndexChanged: {
-            var max = listmodel.count - 1
-            if (max < 2)
-                return;  // listmodel not ready yet
+            if (!loaded)
+                return;
             // Stay away from the edges; wrap around.
-            // The listmodel has extra entries at the ends to allow this. 
-            if (currentIndex == 0)
-                currentIndex = max - 1
-            else if (currentIndex == max)
-                currentIndex = 1
+            // The notemodel has extra entries at the ends to allow this. 
+            if (currentIndex < notemodel.first)
+                currentIndex = notemodel.last + 1
+            else if (currentIndex > notemodel.last + 1)
+                currentIndex = notemodel.first
         }
 
-        Component.onCompleted: currentIndex = 1
+        property bool loaded: notemodel.loaded
+        onLoadedChanged: {
+            currentIndex = 1
+            // for some reason the highlight doesn't focus on it on its own,
+            // though it does do that when currentIndex changes in other places
+            positionViewAtIndex(1, ListView.Contain)
+        }
 
-        property int lastNote: count - 3
         property bool atNewNote: currentIndex == count - 2
     }
 
@@ -133,7 +125,8 @@ Page {
         id: overview
 
         Overview {
-            onNoteDragged: NoteScript.moveNote(listmodel, oldNumber, newNumber)
+            notemodel: notering.notemodel
+            onNoteDragged: NoteScript.moveNote(notemodel, oldNumber, newNumber)
         }
     }
 
@@ -155,7 +148,7 @@ Page {
         Label {
             objectName: 'toolbarPageNumber'
             text: listview.atNewNote ? ""
-                  : "" + listview.currentIndex + "/" + listview.lastNote
+                  : "" + listview.currentIndex + "/" + notemodel.last
             // ToolBarLayout doesn't track the width correctly when the
             // text changes, so just set a width with some spare space here.
             Component.onCompleted: width = paintedWidth * 2
@@ -191,10 +184,10 @@ Page {
         MenuLayout {
             MenuItem {
                 text: "Undelete Note";
-                enabled: listmodel.deleted_count > 0
+                enabled: notemodel.deleted_count > 0
                 onClicked: {
                     var index = currentIndex
-                    NoteScript.undeleteNote(listmodel, index)
+                    NoteScript.undeleteNote(notemodel, index)
                     // focus on the newly undeleted note
                     currentIndex = index
                 }
@@ -226,7 +219,7 @@ Page {
 
         function find(dir) {
             listview.currentItem.note.releaseSearch()
-            var found = NoteScript.findFrom(listmodel, dir,
+            var found = NoteScript.findFrom(notemodel, dir,
                 listview.currentIndex, listview.currentItem.note.cursorPosition,
                 text)
             if (found) {

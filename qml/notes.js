@@ -40,31 +40,18 @@ function populateRing(model) {
         var results = tx.executeSql('SELECT name FROM notes ORDER BY seq');
         model.append({ "name": "" })
         for (var i = 0; results.rows.item(i) != null; i++) {
-            model.append({ "name": results.rows.item(i).name })
+            var name = results.rows.item(i).name
+            model.append({ "name": name })
         }
         model.append({ "name": "" })
         if (results.rows.length > 0) {
-            model.append({ "name": results.rows.item(0).name })
+            var name = results.rows.item(0).name
+            model.append({ "name": name })
         } else {
             model.append({ "name": "" })
         }
         results = tx.executeSql('SELECT COUNT(*) AS c FROM deleted_notes');
         model.deleted_count = results.rows.item(0).c;
-    })
-}
-
-function populateTitleList(model) {
-    var db = openDb()
-    db.readTransaction(function (tx) {
-        model.clear()
-        var results = tx.executeSql('SELECT seq, name FROM notes ORDER BY seq');
-        for (var i = 0; results.rows.item(i) != null; i++) {
-            var name = results.rows.item(i).name
-            var text = backend.read_note(name)
-            var title = text.split("\n")[0]
-            title = "" + results.rows.item(i).seq + ". " + title
-            model.append({ "name": name, "title": title })
-        }
     })
 }
 

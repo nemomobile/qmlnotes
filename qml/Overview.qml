@@ -10,14 +10,9 @@ Page {
     id: overviewpage
 
     property alias currentIndex: listview.currentIndex
+    property ListModel notemodel
 
     signal noteDragged(int oldNumber, int newNumber)
-
-    ListModel {
-        id: listmodel
-
-        Component.onCompleted: NoteScript.populateTitleList(listmodel)
-    }
 
     Component {
         id: delegate
@@ -26,14 +21,22 @@ Page {
             objectName: 'overviewbutton'
             // Use a private MouseArea in order to catch long clicks
             property alias pressed: buttonmouser.pressed
+            property string name: model.name
 
             width: listview.width
-            text: model.title
+            // Filter out the notering's sentinels
+            visible: index >= notemodel.first && index <= notemodel.last
+            height: visible ? implicitHeight : 0
+            text: "" + index + "."
             font.pointSize: 24
+
+            onNameChanged: {
+                text = "" + index + ". " + backend.read_note(name).split("\n")[0]
+            }
 
             onClicked: {
                 pageStack.pop()
-                pageStack.currentPage.currentIndex = index + 1
+                pageStack.currentPage.currentIndex = index
             }
 
             Component.onCompleted: buttonmouser.clicked.connect(clicked)
@@ -54,7 +57,7 @@ Page {
                     // Then animate to x + 20
                     dragproxy.x = dragproxy.x + 20
                     dragproxy.y = parent.y - listview.contentY + listview.y
-                    dragproxy.text = model.title
+                    dragproxy.text = text
                     dragproxy.visible = true
                     // can't use parent.visible because that cancels our press
                     parent.opacity = 0
@@ -69,14 +72,14 @@ Page {
                     dy += dragproxy.height / 2
                     var newindex = listview.indexAt(0, dy)
                     // go to first or last position if dy is outside the list
-                    if (newindex < 0 && dy < 0)
-                        newindex = 0
+                    if (newindex < notemodel.first && dy < 0)
+                        newindex = notemodel.first
                     if (newindex < 0 && dy > listview.contentHeight)
-                        newindex = listview.count - 1
+                        newindex = notemodel.last
                     // move the invisible button to where the dragproxy
                     // would be dropped if it were released right now
-                    if (newindex >= 0 && newindex != index)
-                        listmodel.move(index, newindex, 1)
+                    if (newindex >= notemodel.first && newindex != index)
+                        notemodel.move(index, newindex, 1)
                 }
 
                 onReleased: {
@@ -94,7 +97,7 @@ Page {
                 onCanceled: {
                     if (drag.target == undefined)
                         return
-                    listmodel.move(index, dragStartIndex, 1)
+                    notemodel.move(index, dragStartIndex, 1)
                     drag.target = undefined
                     dragproxy.visible = false
                     parent.opacity = 100
@@ -112,7 +115,7 @@ Page {
 
         onClicked: {
             pageStack.pop()
-            pageStack.currentPage.currentIndex = listview.count + 1
+            pageStack.currentPage.currentIndex = notemodel.last + 1
         }
     }
 
@@ -125,7 +128,7 @@ Page {
             left: parent.left; right: parent.right
         }
         clip: true  // don't overlap the new note button
-        model: listmodel
+        model: notemodel
         delegate: delegate
 
         SmoothedAnimation {
