@@ -159,7 +159,7 @@ Page {
         id: emptylistcomforter
 
         anchors.centerIn: listview
-        visible: listview.count == 0
+        visible: notemodel.last < 1
         font.pointSize: 40
         text: "No notes yet"
         color: "gray"
