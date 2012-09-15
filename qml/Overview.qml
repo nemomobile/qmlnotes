@@ -12,8 +12,6 @@ Page {
     property alias currentIndex: listview.currentIndex
     property ListModel notemodel
 
-    signal noteDragged(int oldNumber, int newNumber)
-
     Component {
         id: delegate
 
@@ -89,8 +87,7 @@ Page {
                     dragproxy.visible = false
                     parent.opacity = 100
                     if (dragStartIndex != index) {
-                        // emit signal with 1-based page numbers
-                        noteDragged(dragStartIndex + 1, index + 1)
+                        NoteScript.moveNote(notemodel, dragStartIndex, index)
                     }
                 }
 

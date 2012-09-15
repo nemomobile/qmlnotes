@@ -126,7 +126,6 @@ Page {
 
         Overview {
             notemodel: notering.notemodel
-            onNoteDragged: NoteScript.moveNote(notemodel, oldNumber, newNumber)
         }
     }
 
