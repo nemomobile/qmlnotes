@@ -10,6 +10,7 @@ License:    GPLv2+
 URL:        https://github.com/nemomobile/qmlnotes
 Source0:    %{name}-%{version}.tar.bz2
 Requires:   qt-components
+Requires:   %{name}-theme-blanco-extra
 BuildRequires:  pkgconfig(QtCore) >= 4.7.0
 BuildRequires:  pkgconfig(QtDeclarative)
 BuildRequires:  pkgconfig(QtGui)
@@ -28,6 +29,12 @@ Requires:   ruby
 
 %description tests
 This package contains unit tests to be run with TDriver and testrunner-lite.
+
+%package theme-blanco-extra
+Summary:    Icons and images for qmlnotes
+
+%description theme-blanco-extra
+This package contains icons and images for use by qmlnotes.
 
 %prep
 %setup -q
@@ -48,6 +55,10 @@ rm -rf %{buildroot}
 mkdir -p %{buildroot}/%{_datadir}/applications
 install -m 0644 qmlnotes.desktop %{buildroot}/%{_datadir}/applications/
 %qmake_install
+mkdir -p %{buildroot}/%{_datadir}/themes/blanco/meegotouch/images/backgrounds/
+install -m 0644 images/notes-background.jpg %{buildroot}/%{_datadir}/themes/blanco/meegotouch/images/backgrounds/
+mkdir -p %{buildroot}/%{_datadir}/themes/blanco/meegotouch/icons/
+install -m 0644 icons/*.png %{buildroot}/%{_datadir}/themes/blanco/meegotouch/icons/
 
 %files
 %defattr(-,root,root,-)
@@ -57,3 +68,7 @@ install -m 0644 qmlnotes.desktop %{buildroot}/%{_datadir}/applications/
 %files tests
 %defattr(-,root,root,-)
 /opt/tests/qmlnotes/
+
+%files theme-blanco-extra
+%defattr(-,root,root,-)
+%{_datadir}/themes/blanco/meegotouch/

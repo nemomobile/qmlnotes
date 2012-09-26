@@ -140,7 +140,7 @@ Page {
     tools: ToolBarLayout {
         ToolIcon {
             objectName: 'toolbarOverviewIcon'
-            iconId: "toolbar-pages-all"
+            iconId: "notes-overview"
             onClicked: {
                 pageStack.push(overview)
                 pageStack.currentPage.currentIndex = currentIndex - 1
@@ -149,7 +149,7 @@ Page {
         ToolIcon {
             // insert this as a placeholder to balance the toolbar
             objectName: 'toolbarFindIcon'
-            iconId: "toolbar-search"
+            iconId: "notes-search"
             onClicked: findbar.visible = !findbar.visible
         }
         Label {
@@ -162,7 +162,7 @@ Page {
         }
         ToolIcon {
             objectName: 'toolbarSelectIcon'
-            iconId: "toolbar-cut-paste"
+            iconId: "notes-select"
             onClicked: globalSelectActive = !globalSelectActive
 
             Rectangle {

@@ -41,6 +41,14 @@ Item {
     }
     function releaseSearch() { editor.deselect() }
 
+    Image {
+        id: background
+
+        anchors.fill: parent
+        fillMode: Image.Stretch
+        source: "image://theme/notes-background"
+    }
+
     Flickable {
         id: editorview
 
@@ -122,18 +130,18 @@ Item {
         anchors.bottom: editorview.bottom
         anchors.right: editorview.right
 
-        ToolButton {
-            text: "Cut"
+        ToolIcon {
+            iconId: "notes-cut"
             enabled: editor.selectionStart < editor.selectionEnd
             onClicked: editor.cut()
         }
-        ToolButton {
-            text: "Copy"
+        ToolIcon {
+            iconId: "notes-copy"
             enabled: editor.selectionStart < editor.selectionEnd
             onClicked: editor.copy()
         }
-        ToolButton {
-            text: "Paste"
+        ToolIcon {
+            iconId: "notes-paste"
             enabled: editor.canPaste
             onClicked: editor.paste()
         }
