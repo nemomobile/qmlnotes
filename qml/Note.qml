@@ -46,7 +46,8 @@ Item {
 
         anchors.fill: parent
         fillMode: Image.Stretch
-        source: "image://theme/notes-background"
+        source: width > height ? "../images/notes-background-landscape.jpg"
+                               : "../images/notes-background-portrait.jpg"
     }
 
     Flickable {
@@ -131,17 +132,17 @@ Item {
         anchors.right: editorview.right
 
         ToolIcon {
-            iconId: "notes-cut"
+            iconSource: "../icons/icon-m-notes-cut.png";
             enabled: editor.selectionStart < editor.selectionEnd
             onClicked: editor.cut()
         }
         ToolIcon {
-            iconId: "notes-copy"
+            iconSource: "../icons/icon-m-notes-copy.png";
             enabled: editor.selectionStart < editor.selectionEnd
             onClicked: editor.copy()
         }
         ToolIcon {
-            iconId: "notes-paste"
+            iconSource: "../icons/icon-m-notes-paste.png";
             enabled: editor.canPaste
             onClicked: editor.paste()
         }

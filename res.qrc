@@ -5,5 +5,13 @@
         <file>qml/NoteRing.qml</file>
         <file>qml/Overview.qml</file>
         <file>main.qml</file>
+        <file>icons/icon-m-notes-copy.png</file>
+        <file>icons/icon-m-notes-cut.png</file>
+        <file>icons/icon-m-notes-paste.png</file>
+        <file>icons/icon-m-notes-overview.png</file>
+        <file>icons/icon-m-notes-search.png</file>
+        <file>icons/icon-m-notes-select.png</file>
+        <file>images/notes-background-landscape.jpg</file>
+        <file>images/notes-background-portrait.jpg</file>
     </qresource>
 </RCC>

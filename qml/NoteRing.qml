@@ -57,7 +57,7 @@ Page {
                     anchors.top: note.top
                     anchors.bottom: note.bottom
                     width: notering.spacing
-                    color: "brown"
+                    color: "black"
                     z: note.z + 1
                 }
             }
@@ -140,7 +140,7 @@ Page {
     tools: ToolBarLayout {
         ToolIcon {
             objectName: 'toolbarOverviewIcon'
-            iconId: "notes-overview"
+            iconSource: "../icons/icon-m-notes-overview.png"
             onClicked: {
                 pageStack.push(overview)
                 pageStack.currentPage.currentIndex = currentIndex - 1
@@ -149,7 +149,7 @@ Page {
         ToolIcon {
             // insert this as a placeholder to balance the toolbar
             objectName: 'toolbarFindIcon'
-            iconId: "notes-search"
+            iconSource: "../icons/icon-m-notes-search.png"
             onClicked: findbar.visible = !findbar.visible
         }
         Label {
@@ -162,7 +162,7 @@ Page {
         }
         ToolIcon {
             objectName: 'toolbarSelectIcon'
-            iconId: "notes-select"
+            iconSource: "../icons/icon-m-notes-select.png"
             onClicked: globalSelectActive = !globalSelectActive
 
             Rectangle {
@@ -177,8 +177,9 @@ Page {
         }
         ToolIcon {
             objectName: 'toolbarMenuIcon'
-            iconId: theme.inverted ? "icon-m-toolbar-view-menu-white"
-                                   : "icon-m-toolbar-view-menu";
+            iconId: noteMenu.status == DialogStatus.Closed
+                     ? "icon-m-toolbar-view-menu"
+                     : "icon-m-toolbar-view-menu-white";
             onClicked: (noteMenu.status == DialogStatus.Closed)
                        ? noteMenu.open() : noteMenu.close()
         }
