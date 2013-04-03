@@ -56,7 +56,7 @@ mkdir -p %{buildroot}/%{_datadir}/applications
 install -m 0644 qmlnotes.desktop %{buildroot}/%{_datadir}/applications/
 %qmake_install
 mkdir -p %{buildroot}/%{_datadir}/themes/blanco/meegotouch/images/backgrounds/
-install -m 0644 images/notes-background.jpg %{buildroot}/%{_datadir}/themes/blanco/meegotouch/images/backgrounds/
+install -m 0644 images/notes-background-*.jpg %{buildroot}/%{_datadir}/themes/blanco/meegotouch/images/backgrounds/
 mkdir -p %{buildroot}/%{_datadir}/themes/blanco/meegotouch/icons/
 install -m 0644 icons/*.png %{buildroot}/%{_datadir}/themes/blanco/meegotouch/icons/
 
