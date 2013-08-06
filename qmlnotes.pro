@@ -16,7 +16,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 PROJECT_NAME = qmlnotes
-QT += declarative
+QT += qml quick
 
 target.path = $$INSTALL_ROOT/usr/bin
 INSTALLS += target
@@ -33,17 +33,18 @@ TARGET = $$PROJECT_NAME
 
 CONFIG += link_pkgconfig
 
-packagesExist(qdeclarative-boostable) {
-    message("Building with qdeclarative-boostable support")
+packagesExist(qdeclarative5-boostable) {
+    message("Building with qdeclarative5-boostable support")
     DEFINES += HAS_BOOSTER
-    PKGCONFIG += qdeclarative-boostable
+    PKGCONFIG += qdeclarative5-boostable
 } else {
-    warning("qdeclarative-boostable not available; startup times will be slower")                                                                         
+    warning("qdeclarative5-boostable not available; startup times will be slower")
 }
 
-tests.path = $$INSTALL_ROOT/opt/tests/qmlnotes
-tests.files = tests/tests.xml tests/*.rb tests/notes.sh
-tests.extra = (cd tests && ./gen_tests_xml.sh >$$OUT_PWD/tests/tests.xml)
-tests.CONFIG = no_check_exist
-
-INSTALLS += tests
+# Tests disabled until we find a Qt5 alternative for qttas
+#
+# tests.path = $$INSTALL_ROOT/opt/tests/qmlnotes
+# tests.files = tests/tests.xml tests/*.rb tests/notes.sh
+# tests.extra = (cd tests && ./gen_tests_xml.sh >$$OUT_PWD/tests/tests.xml)
+# tests.CONFIG = no_check_exist
+# INSTALLS += tests
