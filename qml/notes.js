@@ -1,14 +1,12 @@
 // Copyright (C) 2012 Jolla Ltd.
 // Contact: Richard Braakman <richard.braakman@jollamobile.com>
 
+.import QtQuick.LocalStorage 2.0 as Sql
+
 function upgradeSchema(db) {
-    if (db.version == '') {
-        db.changeVersion('', '1', function (tx) {
+    if (db.version === '') {
+        db.changeVersion('', '1.0', function (tx) {
             tx.executeSql('CREATE TABLE notes (seq INTEGER, name TEXT)');
-        })
-    }
-    if (db.version == '1') {
-        db.changeVersion('1', '2', function (tx) {
             tx.executeSql('CREATE TABLE deleted_notes ('
                + 'delete_time TEXT, name TEXT, body TEXT)');
         })
@@ -16,10 +14,9 @@ function upgradeSchema(db) {
 }
 
 function openDb() {
-    var db = openDatabaseSync('qmlnotes', '', 'Notes meta-information', 10000,
+    var db = Sql.LocalStorage.openDatabaseSync('qmlnotes', '', 'Notes meta-information', 10000,
             upgradeSchema)
-    if (db.version != '2')
-        upgradeSchema(db);
+
     return db;
 }
 

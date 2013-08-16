@@ -9,26 +9,28 @@ Group:      Applications/System
 License:    GPLv2+
 URL:        https://github.com/nemomobile/qmlnotes
 Source0:    %{name}-%{version}.tar.bz2
-Requires:   qt-components
+Requires:   qt-components-qt5
+Requires:   qt5-qtdeclarative-import-localstorageplugin
 Requires:   %{name}-theme-blanco-extra
-BuildRequires:  pkgconfig(QtCore) >= 4.7.0
-BuildRequires:  pkgconfig(QtDeclarative)
-BuildRequires:  pkgconfig(QtGui)
-BuildRequires:  pkgconfig(qdeclarative-boostable)
+BuildRequires:  pkgconfig(Qt5Core)
+BuildRequires:  pkgconfig(Qt5Qml)
+BuildRequires:  pkgconfig(Qt5Quick)
+BuildRequires:  pkgconfig(qdeclarative5-boostable)
 
 %description
 Note-taking application using Qt Quick
 
-%package tests
-Summary:    Unit tests for the note-taking application
-Group:      Development/Libraries
-Requires:   %{name} = %{version}-%{release}
-Requires:   qttas-server
-Requires:   rubygem-testability-driver-qt-sut-plugin
-Requires:   ruby
-
-%description tests
-This package contains unit tests to be run with TDriver and testrunner-lite.
+# Qttas does not have a Qt5 version yet
+#
+# %package tests
+# Summary:    Unit tests for the note-taking application
+# Group:      Development/Libraries
+# Requires:   %{name} = %{version}-%{release}
+# Requires:   qttas-server
+# Requires:   rubygem-testability-driver-qt-sut-plugin
+# Requires:   ruby
+# %description tests
+# This package contains unit tests to be run with TDriver and testrunner-lite.
 
 %package theme-blanco-extra
 Summary:    Icons and images for qmlnotes
@@ -41,7 +43,7 @@ This package contains icons and images for use by qmlnotes.
 
 %build
 
-%qmake  \
+%qmake5  \
     MEEGO_VERSION_MAJOR=1 \
     MEEGO_VERSION_MINOR=2 \
     MEEGO_VERSION_PATCH=0 \
@@ -54,7 +56,7 @@ make %{?jobs:-j%jobs}
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/%{_datadir}/applications
 install -m 0644 qmlnotes.desktop %{buildroot}/%{_datadir}/applications/
-%qmake_install
+%qmake5_install
 mkdir -p %{buildroot}/%{_datadir}/themes/blanco/meegotouch/images/backgrounds/
 install -m 0644 images/notes-background-*.jpg %{buildroot}/%{_datadir}/themes/blanco/meegotouch/images/backgrounds/
 mkdir -p %{buildroot}/%{_datadir}/themes/blanco/meegotouch/icons/
@@ -65,9 +67,9 @@ install -m 0644 icons/*.png %{buildroot}/%{_datadir}/themes/blanco/meegotouch/ic
 %{_bindir}/qmlnotes
 %{_datadir}/applications/qmlnotes.desktop
 
-%files tests
-%defattr(-,root,root,-)
-/opt/tests/qmlnotes/
+# %files tests
+# %defattr(-,root,root,-)
+# /opt/tests/qmlnotes/
 
 %files theme-blanco-extra
 %defattr(-,root,root,-)
