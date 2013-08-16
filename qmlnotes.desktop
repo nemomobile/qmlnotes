@@ -3,5 +3,5 @@ Version=1.0
 Type=Application
 Terminal=false
 Name=Notes
-Exec=invoker --single-instance --type=d /usr/bin/qmlnotes -fullscreen
+Exec=invoker --single-instance --type=qtcomponents-qt5 /usr/bin/qmlnotes -fullscreen
 Icon=icons-Applications-notes
