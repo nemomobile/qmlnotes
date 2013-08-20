@@ -12,6 +12,7 @@ Source0:    %{name}-%{version}.tar.bz2
 Requires:   qt-components-qt5
 Requires:   qt5-qtdeclarative-import-localstorageplugin
 Requires:   %{name}-theme-blanco-extra
+Requires:   mapplauncherd-booster-qtcomponents-qt5
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Qml)
 BuildRequires:  pkgconfig(Qt5Quick)
